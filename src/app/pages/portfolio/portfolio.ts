@@ -104,7 +104,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
   private readonly triggers: ScrollTrigger[] = [];
   private resizeObserver?: ResizeObserver;
   private skillsTimeline?: gsap.core.Timeline;
-  private animatedTextSections = new Set<string>();
+  private readonly animatedTextSections = new Set<string>();
 
   constructor(@Inject(PLATFORM_ID) private readonly platformId: Object) {}
 
@@ -692,7 +692,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
   private isAutoNavigating = false;
   private currentNavigatedIndex = 0;
-  private revealedNodes = new Set<number>([0]);
+  private readonly revealedNodes = new Set<number>([0]);
   private autoNavTimer?: any;
   private autoNavTimeline?: gsap.core.Timeline;
   private autoNavHandler?: (e: Event) => void;
