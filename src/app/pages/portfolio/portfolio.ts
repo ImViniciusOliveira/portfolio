@@ -1123,13 +1123,11 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     };
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', onUserInteract, { passive: true, once: true });
       window.addEventListener('wheel', onUserInteract, { passive: true, once: true });
       window.addEventListener('touchmove', onUserInteract, { passive: true, once: true });
       window.addEventListener('keydown', onUserInteract, { passive: true, once: true });
 
       this.userScrollCleanup = () => {
-        window.removeEventListener('scroll', onUserInteract);
         window.removeEventListener('wheel', onUserInteract);
         window.removeEventListener('touchmove', onUserInteract);
         window.removeEventListener('keydown', onUserInteract);
