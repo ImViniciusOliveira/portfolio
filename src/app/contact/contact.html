@@ -1,6 +1,6 @@
 <!-- Cabeçalho da Seção -->
 <div class="mb-8">
-  <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
+  <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl xl:text-3xl before:content-['//_']">
     Envie uma Mensagem
   </h2>
 </div>
@@ -103,18 +103,6 @@
           }
         </div>
 
-        <!-- Alerta de Sucesso ou Erro -->
-        @if (showAlert()) {
-          <div
-            [class]="isSuccess()
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : 'bg-red-50 border-red-200 text-red-800'"
-            class="p-3.5 rounded-md border text-sm text-center font-medium shadow-sm transition-all"
-          >
-            {{ alertMessage() }}
-          </div>
-        }
-
         <!-- Botão -->
         <button
           type="submit"
@@ -159,3 +147,37 @@
 
       </form>
     </div>
+
+<!-- Notificação Toast Flutuante na Lateral Direita Embaixo -->
+@if (showAlert()) {
+  <div
+    [class]="isSuccess()
+      ? 'bg-emerald-600 border-emerald-500 text-white shadow-xl'
+      : 'bg-red-600 border-red-500 text-white shadow-xl'"
+    class="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-lg border px-5 py-4 text-sm font-semibold shadow-2xl transition-all"
+  >
+    @if (isSuccess()) {
+      <svg class="h-5 w-5 shrink-0 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+      </svg>
+    } @else {
+      <svg class="h-5 w-5 shrink-0 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    }
+
+    <span>{{ alertMessage() }}</span>
+
+    <!-- Botão Fechar -->
+    <button
+      type="button"
+      (click)="showAlert.set(false)"
+      aria-label="Fechar notificação"
+      class="ml-2 inline-flex h-5 w-5 items-center justify-center rounded text-white/80 transition-colors hover:bg-white/20 hover:text-white"
+    >
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+}

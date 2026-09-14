@@ -68,6 +68,12 @@ export class Portfolio implements AfterViewInit, OnDestroy {
   @ViewChild('node4Card') node4Card!: ElementRef<HTMLDivElement>;
   @ViewChild('node5Card') node5Card!: ElementRef<HTMLDivElement>;
 
+  @ViewChild('node1ActiveLayer') node1ActiveLayer?: ElementRef<HTMLDivElement>;
+  @ViewChild('node2ActiveLayer') node2ActiveLayer?: ElementRef<HTMLDivElement>;
+  @ViewChild('node3ActiveLayer') node3ActiveLayer?: ElementRef<HTMLDivElement>;
+  @ViewChild('node4ActiveLayer') node4ActiveLayer?: ElementRef<HTMLDivElement>;
+  @ViewChild('node5ActiveLayer') node5ActiveLayer?: ElementRef<HTMLDivElement>;
+
   @ViewChild('heroH1') heroH1?: ElementRef<HTMLHeadingElement>;
   @ViewChild('heroH2') heroH2?: ElementRef<HTMLHeadingElement>;
   @ViewChild('heroP') heroP?: ElementRef<HTMLParagraphElement>;
@@ -105,13 +111,17 @@ export class Portfolio implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
+    // Reseta imediatamente todos os nós e elementos de texto no 1º frame do browser
+    this.resetAllNodesAndPaths();
+
     // Calcula os caminhos SVG e inicia as animações GSAP amarradas ao Scroll
     setTimeout(() => {
       this.calculatePaths();
       this.initNodeScrollAnimations();
       this.initPathScrollAnimations();
+      this.initSectionScrollAnimations();
       this.resetAndPlayHeroAnimation(false);
-    }, 150);
+    }, 50);
 
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver(() => {
@@ -120,6 +130,108 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       });
       if (this.portfolioContainer?.nativeElement) {
         this.resizeObserver.observe(this.portfolioContainer.nativeElement);
+      }
+    }
+  }
+
+  private readonly borderActiveColors = [
+    '#0ea5e9',
+    '#10b981',
+    '#f59e0b',
+    '#6366f1',
+    '#f43f5e'
+  ];
+  private readonly borderGrayColor = '#cbd5e1';
+
+  private activateNodeColor(index: number, immediate: boolean = false): void {
+    const layers = [
+      this.node1ActiveLayer?.nativeElement,
+      this.node2ActiveLayer?.nativeElement,
+      this.node3ActiveLayer?.nativeElement,
+      this.node4ActiveLayer?.nativeElement,
+      this.node5ActiveLayer?.nativeElement
+    ];
+    const cards = [
+      this.node1Card?.nativeElement,
+      this.node2Card?.nativeElement,
+      this.node3Card?.nativeElement,
+      this.node4Card?.nativeElement,
+      this.node5Card?.nativeElement
+    ];
+
+    const targetLayer = layers[index - 1];
+    const targetCard = cards[index - 1];
+    const activeBorder = this.borderActiveColors[index - 1] || this.borderGrayColor;
+
+    if (targetCard) {
+      if (immediate) {
+        gsap.set(targetCard, { borderColor: activeBorder });
+      } else {
+        gsap.to(targetCard, {
+          borderColor: activeBorder,
+          duration: 0.6,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      }
+    }
+
+    if (targetLayer) {
+      if (immediate) {
+        gsap.set(targetLayer, { clipPath: 'inset(0% 0% 0% 0%)' });
+      } else {
+        gsap.to(targetLayer, {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          duration: 0.6,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      }
+    }
+  }
+
+  private deactivateNodeColor(index: number, immediate: boolean = false): void {
+    const layers = [
+      this.node1ActiveLayer?.nativeElement,
+      this.node2ActiveLayer?.nativeElement,
+      this.node3ActiveLayer?.nativeElement,
+      this.node4ActiveLayer?.nativeElement,
+      this.node5ActiveLayer?.nativeElement
+    ];
+    const cards = [
+      this.node1Card?.nativeElement,
+      this.node2Card?.nativeElement,
+      this.node3Card?.nativeElement,
+      this.node4Card?.nativeElement,
+      this.node5Card?.nativeElement
+    ];
+
+    const targetLayer = layers[index - 1];
+    const targetCard = cards[index - 1];
+
+    if (targetCard) {
+      if (immediate) {
+        gsap.set(targetCard, { borderColor: this.borderGrayColor });
+      } else {
+        gsap.to(targetCard, {
+          borderColor: this.borderGrayColor,
+          duration: 0.35,
+          ease: 'power2.in',
+          overwrite: 'auto'
+        });
+      }
+    }
+
+    if (targetLayer) {
+      if (immediate) {
+        gsap.set(targetLayer, { clipPath: 'inset(0% 0% 100% 0%)' });
+      } else {
+        gsap.to(targetLayer, {
+          clipPath: 'inset(0% 0% 100% 0%)',
+          duration: 0.35,
+          ease: 'power2.in',
+          overwrite: 'auto'
+        });
       }
     }
   }
@@ -133,8 +245,9 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       this.node5Card?.nativeElement
     ];
 
-    allNodes.forEach(node => {
+    allNodes.forEach((node, idx) => {
       if (node) gsap.set(node, { opacity: 0, scale: 0.85, y: 35 });
+      this.deactivateNodeColor(idx + 1, true);
     });
 
     const btnChildren = this.heroBtns?.nativeElement
@@ -259,7 +372,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
         gsap.set(pathEl, { opacity: 1, strokeDashoffset: length - currentLen });
 
         const pt = pathEl.getPointAtLength(currentLen);
-        if (p >= 0.98) {
+        if (p >= 0.995) {
           this.arrowHead1.set({ x: pt.x, y: pt.y, angle: 90, visible: false });
           gsap.to(node1, {
             opacity: 1,
@@ -269,10 +382,26 @@ export class Portfolio implements AfterViewInit, OnDestroy {
             ease: 'back.out(1.7)',
             overwrite: 'auto'
           });
+          this.activateNodeColor(1);
         } else {
           const ptNext = pathEl.getPointAtLength(Math.min(currentLen + 1, length));
           const angle = Math.atan2(ptNext.y - pt.y, ptNext.x - pt.x) * (180 / Math.PI);
           this.arrowHead1.set({ x: pt.x, y: pt.y, angle, visible: true });
+
+          if (p >= 0.60) {
+            gsap.to(node1, {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              duration: 0.4,
+              ease: 'back.out(1.7)',
+              overwrite: 'auto'
+            });
+            this.deactivateNodeColor(1);
+          } else {
+            gsap.set(node1, { opacity: 0, scale: 0.85, y: 35 });
+            this.deactivateNodeColor(1);
+          }
         }
       }
     });
@@ -317,6 +446,10 @@ export class Portfolio implements AfterViewInit, OnDestroy {
   }
 
   private animateAboutText(): void {
+    if (typeof window !== 'undefined' && window.scrollY <= 35 && !this.isAutoNavigating) {
+      return;
+    }
+
     if (this.animatedTextSections.has('about')) return;
     this.animatedTextSections.add('about');
 
@@ -460,6 +593,19 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       return;
     }
 
+    const allNodes = [
+      this.node1Card?.nativeElement,
+      this.node2Card?.nativeElement,
+      this.node3Card?.nativeElement,
+      this.node4Card?.nativeElement,
+      this.node5Card?.nativeElement
+    ];
+
+    // Reseta temporariamente as transformações GSAP para medir a posição exata (scale 1.0, y 0) sem deslocamento
+    allNodes.forEach(node => {
+      if (node) gsap.set(node, { scale: 1, y: 0 });
+    });
+
     const containerRect = this.portfolioContainer.nativeElement.getBoundingClientRect();
 
     const getCoords = (el: ElementRef<HTMLDivElement>) => {
@@ -479,6 +625,14 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     const n3 = getCoords(this.node3Card);
     const n4 = getCoords(this.node4Card);
     const n5 = getCoords(this.node5Card);
+
+    // Restaura a escala/deslocamento original para os nós que ainda não foram revelados
+    allNodes.forEach((node, idx) => {
+      const isRevealed = this.revealedNodes.has(idx + 1);
+      if (node && !isRevealed) {
+        gsap.set(node, { scale: 0.85, y: 35 });
+      }
+    });
 
     // Conecta a lateral direita do ponto de origem (HTTPS) ao 1º cartão (vai reto, sobe um pouco e desce)
     this.path1.set(this.buildOriginToNode1Path(origin.xRight, origin.yCenter, n1.x, n1.yTop));
@@ -618,11 +772,13 @@ export class Portfolio implements AfterViewInit, OnDestroy {
                 gsap.set(pathEl, { opacity: 1, strokeDashoffset: 0 });
                 setArrow({ x: 0, y: 0, angle: 90, visible: false });
                 if (targetNode) gsap.set(targetNode, { opacity: 1, scale: 1, y: 0 });
+                this.activateNodeColor(1, true);
                 return;
               }
               if (index >= 1) {
                 gsap.set(pathEl, { opacity: 0, strokeDashoffset: length });
                 setArrow({ x: 0, y: 0, angle: 0, visible: false });
+                this.deactivateNodeColor(targetIdx, true);
                 return;
               }
             }
@@ -637,6 +793,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
               if (targetNode) {
                 gsap.set(targetNode, { opacity: 1, scale: 1, y: 0 });
               }
+              this.activateNodeColor(targetIdx, true);
               return;
             }
 
@@ -656,7 +813,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
                 this.animateContactButton();
               }
 
-              if (progress >= 0.98) {
+              if (progress >= 0.99) {
                 this.currentNavigatedIndex = targetIdx;
                 this.revealedNodes.add(targetIdx);
                 setArrow({ x: pt.x, y: pt.y, angle: 90, visible: false });
@@ -670,17 +827,38 @@ export class Portfolio implements AfterViewInit, OnDestroy {
                     overwrite: 'auto'
                   });
                 }
+                this.activateNodeColor(targetIdx);
               } else {
                 const ptNext = pathEl.getPointAtLength(Math.min(currentLen + 1, length));
                 const angle = Math.atan2(ptNext.y - pt.y, ptNext.x - pt.x) * (180 / Math.PI);
                 setArrow({ x: pt.x, y: pt.y, angle, visible: true });
-                if (targetNode) {
-                  gsap.set(targetNode, { opacity: 0, scale: 0.85, y: 35 });
+
+                if (progress >= 0.60) {
+                  if (targetNode) {
+                    gsap.to(targetNode, {
+                      opacity: 1,
+                      scale: 1,
+                      y: 0,
+                      duration: 0.4,
+                      ease: 'back.out(1.7)',
+                      overwrite: 'auto'
+                    });
+                  }
+                  this.deactivateNodeColor(targetIdx);
+                } else {
+                  if (targetNode) {
+                    gsap.set(targetNode, { opacity: 0, scale: 0.85, y: 35 });
+                  }
+                  this.deactivateNodeColor(targetIdx);
                 }
               }
             } else {
               gsap.set(pathEl, { opacity: 0, strokeDashoffset: length });
               setArrow({ x: 0, y: 0, angle: 0, visible: false });
+              if (targetNode) {
+                gsap.set(targetNode, { opacity: 0, scale: 0.85, y: 35 });
+              }
+              this.deactivateNodeColor(targetIdx);
             }
           }
         }
@@ -689,6 +867,36 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       if (tween.scrollTrigger) {
         this.triggers.push(tween.scrollTrigger);
       }
+    });
+  }
+
+  private initSectionScrollAnimations(): void {
+    if (typeof document === 'undefined') return;
+
+    const sections = [
+      { id: 'about', animate: () => this.animateAboutText() },
+      { id: 'skills', animate: () => this.animateSkillsText() },
+      { id: 'projects', animate: () => this.animateProjectsText() },
+      { id: 'contact', animate: () => this.animateContactButton() }
+    ];
+
+    sections.forEach(({ id, animate }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const st = ScrollTrigger.create({
+        trigger: el,
+        start: 'top 75%',
+        onEnter: () => animate(),
+        onEnterBack: () => animate(),
+        onUpdate: (self) => {
+          if (self.isActive && typeof window !== 'undefined' && window.scrollY > 35) {
+            animate();
+          }
+        }
+      });
+
+      this.triggers.push(st);
     });
   }
 
@@ -768,12 +976,14 @@ export class Portfolio implements AfterViewInit, OnDestroy {
         if (targetNode) {
           gsap.set(targetNode, { opacity: 1, scale: 1, y: 0 });
         }
+        this.activateNodeColor(idx + 1, true);
       } else if (idx >= targetIdx) {
         gsap.set(pathEl, { opacity: 0, strokeDashoffset: length });
         setArrow({ x: 0, y: 0, angle: 0, visible: false });
         if (targetNode) {
           gsap.set(targetNode, { opacity: 0, scale: 0.85, y: 35 });
         }
+        this.deactivateNodeColor(idx + 1, true);
       }
     });
 
@@ -803,7 +1013,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
             }
 
             const pt = pathEl.getPointAtLength(currentLen);
-            if (p >= 0.98) {
+            if (p >= 0.995) {
               setArrow({ x: pt.x, y: pt.y, angle: 90, visible: false });
               if (targetCard) {
                 gsap.to(targetCard, {
@@ -815,10 +1025,30 @@ export class Portfolio implements AfterViewInit, OnDestroy {
                   overwrite: 'auto'
                 });
               }
+              this.activateNodeColor(targetIdx);
             } else {
               const ptNext = pathEl.getPointAtLength(Math.min(currentLen + 1, length));
               const angle = Math.atan2(ptNext.y - pt.y, ptNext.x - pt.x) * (180 / Math.PI);
               setArrow({ x: pt.x, y: pt.y, angle, visible: true });
+
+              if (p >= 0.60) {
+                if (targetCard) {
+                  gsap.to(targetCard, {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    duration: 0.4,
+                    ease: 'back.out(1.7)',
+                    overwrite: 'auto'
+                  });
+                }
+                this.deactivateNodeColor(targetIdx);
+              } else {
+                if (targetCard) {
+                  gsap.set(targetCard, { opacity: 0, scale: 0.85, y: 35 });
+                }
+                this.deactivateNodeColor(targetIdx);
+              }
             }
           },
           onComplete: () => {
@@ -827,6 +1057,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
             if (targetCard) {
               gsap.set(targetCard, { opacity: 1, scale: 1, y: 0 });
             }
+            this.activateNodeColor(targetIdx, true);
             this.triggerTargetSectionAnimation(targetIdx);
           }
         });

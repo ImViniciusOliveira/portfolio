@@ -113,7 +113,7 @@
   <!-- Ponto de Origem Comum / Partida da Animação (Espaçamento do Header) -->
   <section id="origin" class="relative flex min-h-[25vh] w-full flex-col items-start justify-center !pt-12 !pb-8 md:!pt-16 md:!pb-12">
     <!-- Bloco do Ponto de Origem Comum (Círculo Preto + HTTPS) - Centralizado na 1ª coluna (1/4 da tela) -->
-    <div class="flex w-full lg:w-1/2 flex-col items-center justify-center select-none">
+    <div class="hidden lg:flex w-full lg:w-1/2 flex-col items-center justify-center select-none">
       <span
         #httpsLabel
         class="font-excalidraw text-xs font-bold tracking-widest text-slate-800 transition-opacity duration-300 mb-1"
@@ -131,12 +131,26 @@
   <!-- Apresentação -->
   <section id="hero" class="relative flex flex-col pb-20 !pt-0 md:pb-32">
 
-    <!-- Nó 1: Recebe dados do n8n (Centralizado na metade direita de 50%) -->
-    <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
-      <div #node1Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-sky-500 bg-sky-100/90 px-8 py-5 shadow-none">
-        <span class="font-excalidraw text-lg font-bold tracking-wide text-sky-800 md:text-xl whitespace-nowrap">
-          Recebe dados do n8n
+    <!-- Nó 1: [TRIGGER] Webhook -->
+    <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 hidden lg:flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
+      <div #node1Card style="opacity: 0;" class="relative inline-flex flex-col items-center justify-center min-w-[340px] min-h-[180px] rounded-xl border-[4px] border-slate-300 bg-slate-100/95 px-10 py-8 shadow-md text-center overflow-hidden">
+        <!-- Camada Base (Cinza) -->
+        <span class="font-excalidraw text-xl font-extrabold tracking-wide text-slate-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+          [TRIGGER] Webhook
         </span>
+        <span class="font-excalidraw text-sm font-bold text-slate-400 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+          Recebe Evento &amp; Payload HTTP
+        </span>
+
+        <!-- Camada Ativa (Colorida - Preenchimento do Topo para Baixo) -->
+        <div #node1ActiveLayer class="absolute inset-0 flex flex-col items-center justify-center bg-sky-100/95 px-10 py-8 text-center" style="clip-path: inset(0 0 100% 0);">
+          <span class="font-excalidraw text-xl font-extrabold tracking-wide text-sky-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+            [TRIGGER] Webhook
+          </span>
+          <span class="font-excalidraw text-sm font-bold text-sky-700 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+            Recebe Evento &amp; Payload HTTP
+          </span>
+        </div>
       </div>
     </div>
 
@@ -161,7 +175,7 @@
         </span>
       </h2>
 
-      <p #heroP class="max-w-2xl text-base leading-relaxed text-slate-900 md:text-lg">
+      <p #heroP class="max-w-2xl text-base leading-relaxed text-slate-900 md:text-lg xl:text-xl xl:leading-relaxed">
         Transformando ideias em aplicações web robustas, escaláveis e de alta performance, do código à experiência do usuário.
       </p>
 
@@ -240,12 +254,26 @@
   <!-- Sobre Mim -->
   <section id="about" class="relative flex min-h-[85vh] flex-col justify-center scroll-mt-20 py-24 md:py-36">
 
-    <!-- Nó 2: Processa Lógica & Fluxo (Centralizado na metade esquerda de 50%) -->
-    <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-0 lg:w-1/2 lg:translate-x-0">
-      <div #node2Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-orange-600 bg-orange-200/90 px-8 py-5 shadow-none">
-        <span class="font-excalidraw text-lg font-bold tracking-wide text-orange-600 md:text-xl whitespace-nowrap">
-          Processa Lógica & Fluxo
+    <!-- Nó 2: [LOGIC] Automation -->
+    <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 hidden lg:flex justify-center lg:left-0 lg:w-1/2 lg:translate-x-0">
+      <div #node2Card style="opacity: 0;" class="relative inline-flex flex-col items-center justify-center min-w-[340px] min-h-[180px] rounded-xl border-[4px] border-slate-300 bg-slate-100/95 px-10 py-8 shadow-md text-center overflow-hidden">
+        <!-- Camada Base (Cinza) -->
+        <span class="font-excalidraw text-xl font-extrabold tracking-wide text-slate-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+          [LOGIC] Automation
         </span>
+        <span class="font-excalidraw text-sm font-bold text-slate-400 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+          Valida &amp; Transforma os Dados
+        </span>
+
+        <!-- Camada Ativa (Colorida - Preenchimento do Topo para Baixo) -->
+        <div #node2ActiveLayer class="absolute inset-0 flex flex-col items-center justify-center bg-emerald-100/95 px-10 py-8 text-center" style="clip-path: inset(0 0 100% 0);">
+          <span class="font-excalidraw text-xl font-extrabold tracking-wide text-emerald-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+            [LOGIC] Automation
+          </span>
+          <span class="font-excalidraw text-sm font-bold text-emerald-700 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+            Valida &amp; Transforma os Dados
+          </span>
+        </div>
       </div>
     </div>
 
@@ -255,16 +283,16 @@
       <div class="ml-auto flex w-full flex-col items-start text-left lg:w-1/2">
 
         <!-- Título H2 // -->
-        <h2 #aboutTitle class="mb-4 text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
+        <h2 #aboutTitle style="opacity: 0;" class="mb-4 text-xl font-bold tracking-tight text-slate-900 md:text-2xl xl:text-3xl before:content-['//_']">
           Sobre Mim
         </h2>
 
         <article class="flex flex-col gap-4">
-          <p #aboutP1 class="text-base leading-relaxed text-slate-900 md:text-lg">
+          <p #aboutP1 style="opacity: 0;" class="text-base leading-relaxed text-slate-900 md:text-lg xl:text-xl xl:leading-relaxed">
             Desenvolvedor web fascinado por entender como as engrenagens da tecnologia funcionam por trás dos panos e por criar soluções que resolvem problemas com eficiência.
           </p>
 
-          <p #aboutP2 class="text-base leading-relaxed text-slate-900 md:text-lg">
+          <p #aboutP2 style="opacity: 0;" class="text-base leading-relaxed text-slate-900 md:text-lg xl:text-xl xl:leading-relaxed">
             Minhas principais habilidades vêm principalmente de Java/Spring Boot no backend e Angular no frontend, gerenciamento de bancos de dados relacionais e não relacionais, além de containerização, integrações com arquiteturas de mensageria, automações n8n e agentes de IA.
           </p>
         </article>
@@ -279,12 +307,26 @@
 <!-- Habilidades -->
 <section id="skills" class="relative flex min-h-[85vh] flex-col justify-center scroll-mt-20 py-24 md:py-36">
 
-  <!-- Nó 3: Executa API Spring Boot (Centralizado na metade direita de 50%) -->
-  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
-    <div #node3Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-amber-500 bg-amber-100/90 px-8 py-5 shadow-none">
-      <span class="font-excalidraw text-lg font-bold tracking-wide text-amber-800 md:text-xl whitespace-nowrap">
-        Executa API Spring Boot
+  <!-- Nó 3: [REQ] API Service -->
+  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 hidden lg:flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
+    <div #node3Card style="opacity: 0;" class="relative inline-flex flex-col items-center justify-center min-w-[340px] min-h-[180px] rounded-xl border-[4px] border-slate-300 bg-slate-100/95 px-10 py-8 shadow-md text-center overflow-hidden">
+      <!-- Camada Base (Cinza) -->
+      <span class="font-excalidraw text-xl font-extrabold tracking-wide text-slate-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+        [REQ] API Service
       </span>
+      <span class="font-excalidraw text-sm font-bold text-slate-400 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+        Executa Regras de Negócio
+      </span>
+
+      <!-- Camada Ativa (Colorida - Preenchimento do Topo para Baixo) -->
+      <div #node3ActiveLayer class="absolute inset-0 flex flex-col items-center justify-center bg-amber-100/95 px-10 py-8 text-center" style="clip-path: inset(0 0 100% 0);">
+        <span class="font-excalidraw text-xl font-extrabold tracking-wide text-amber-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+          [REQ] API Service
+        </span>
+        <span class="font-excalidraw text-sm font-bold text-amber-700 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+          Executa Regras de Negócio
+        </span>
+      </div>
     </div>
   </div>
 
@@ -293,7 +335,7 @@
 
     <!-- Cabeçalho da Seção -->
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <h2 #skillsTitle class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
+      <h2 #skillsTitle style="opacity: 0;" class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl xl:text-3xl before:content-['//_']">
         Skills
       </h2>
     </div>
@@ -304,7 +346,7 @@
         <article class="skill-category-card break-inside-avoid flex flex-col gap-4">
 
           <!-- Categorias -->
-          <h3 class="skill-category-title text-base font-semibold text-slate-900 md:text-lg">
+          <h3 class="skill-category-title text-base font-semibold text-slate-900 md:text-lg xl:text-xl">
             {{ category.category }}
           </h3>
 
@@ -314,7 +356,7 @@
               <li class="skill-badge inline-flex items-center gap-2.5 rounded border border-slate-200 bg-white px-3.5 py-2.5 shadow-sm transition-colors duration-200 hover:border-slate-300">
 
                 @if (item.iconType === 'devicon') {
-                  <i [class]="item.icon" class="colored text-base leading-none"></i>
+                  <i [class]="item.icon" class="colored text-base leading-none md:text-lg"></i>
                 }
 
                 @if (item.iconType === 'image') {
@@ -349,7 +391,7 @@
                   }
                 }
 
-                <span class="text-sm font-normal text-slate-900 leading-none md:text-base">
+                <span class="text-sm font-normal text-slate-900 leading-none md:text-base xl:text-lg">
                   {{ item.name }}
                 </span>
 
@@ -369,12 +411,26 @@
 <!-- Projetos -->
 <section id="projects" class="relative flex min-h-[85vh] flex-col justify-center scroll-mt-20 py-24 md:py-36">
 
-  <!-- Nó 4: Fila Mensageria RabbitMQ (Centralizado na metade esquerda de 50%) -->
-  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-0 lg:w-1/2 lg:translate-x-0">
-    <div #node4Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-indigo-500 bg-indigo-100/90 px-8 py-5 shadow-none">
-      <span class="font-excalidraw text-lg font-bold tracking-wide text-indigo-800 md:text-xl whitespace-nowrap">
-        Fila Mensageria RabbitMQ
+  <!-- Nó 4: [QUEUE] RabbitMQ / Redis -->
+  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 hidden lg:flex justify-center lg:left-0 lg:w-1/2 lg:translate-x-0">
+    <div #node4Card style="opacity: 0;" class="relative inline-flex flex-col items-center justify-center min-w-[340px] min-h-[180px] rounded-xl border-[4px] border-slate-300 bg-slate-100/95 px-10 py-8 shadow-md text-center overflow-hidden">
+      <!-- Camada Base (Cinza) -->
+      <span class="font-excalidraw text-xl font-extrabold tracking-wide text-slate-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+        [QUEUE] RabbitMQ / Redis
       </span>
+      <span class="font-excalidraw text-sm font-bold text-slate-400 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+        Gerencia Fila Assíncrona
+      </span>
+
+      <!-- Camada Ativa (Colorida - Preenchimento do Topo para Baixo) -->
+      <div #node4ActiveLayer class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-100/95 px-10 py-8 text-center" style="clip-path: inset(0 0 100% 0);">
+        <span class="font-excalidraw text-xl font-extrabold tracking-wide text-indigo-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+          [QUEUE] RabbitMQ / Redis
+        </span>
+        <span class="font-excalidraw text-sm font-bold text-indigo-700 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+          Gerencia Fila Assíncrona
+        </span>
+      </div>
     </div>
   </div>
 
@@ -384,7 +440,7 @@
     <!-- Cabeçalho da Seção -->
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <!-- Título H2 -->
-      <h2 #projectsTitle class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
+      <h2 #projectsTitle style="opacity: 0;" class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl xl:text-3xl before:content-['//_']">
         Projetos
       </h2>
     </div>
@@ -397,16 +453,16 @@
           <div class="flex flex-col gap-3">
             <!-- Cabeçalho Titulo/ Ano -->
             <header class="flex items-center justify-between gap-4">
-              <h3 class="text-lg font-bold tracking-tight text-slate-900 md:text-xl">
+              <h3 class="text-lg font-bold tracking-tight text-slate-900 md:text-xl xl:text-2xl">
                 {{ project.title }}
               </h3>
-              <span class="text-xs font-normal text-slate-500 md:text-sm">
+              <span class="text-xs font-normal text-slate-500 md:text-sm xl:text-base">
                 {{ project.year }}
               </span>
             </header>
 
             <!-- Descrição -->
-            <p class="text-sm leading-relaxed text-slate-500 md:text-base">
+            <p class="text-sm leading-relaxed text-slate-500 md:text-base xl:text-lg xl:leading-relaxed">
               {{ project.description }}
             </p>
           </div>
@@ -415,7 +471,7 @@
             <!-- Tags -->
             <div class="flex flex-wrap gap-2">
               @for (tech of project.techs; track tech) {
-                <span class="inline-flex items-center rounded bg-slate-100 px-3 py-1 text-xs font-normal leading-none text-slate-900">
+                <span class="inline-flex items-center rounded bg-slate-100 px-3 py-1 text-xs font-normal leading-none text-slate-900 md:text-sm">
                   {{ tech }}
                 </span>
               }
@@ -460,12 +516,26 @@
 <!-- Contato -->
 <section id="contact" class="relative flex min-h-[85vh] flex-col justify-center scroll-mt-20 py-24 md:py-36">
 
-  <!-- Nó 5: Notificação WhatsApp Dispatcher (Centralizado na metade direita de 50%) -->
-  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
-    <div #node5Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-rose-500 bg-rose-100/90 px-8 py-5 shadow-none">
-      <span class="font-excalidraw text-lg font-bold tracking-wide text-rose-800 md:text-xl whitespace-nowrap">
-        Notificação WhatsApp Dispatch
+  <!-- Nó 5: [NOTIFY] WhatsApp / Telegram -->
+  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 hidden lg:flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
+    <div #node5Card style="opacity: 0;" class="relative inline-flex flex-col items-center justify-center min-w-[340px] min-h-[180px] rounded-xl border-[4px] border-slate-300 bg-slate-100/95 px-10 py-8 shadow-md text-center overflow-hidden">
+      <!-- Camada Base (Cinza) -->
+      <span class="font-excalidraw text-xl font-extrabold tracking-wide text-slate-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+        [NOTIFY] WhatsApp / Telegram
       </span>
+      <span class="font-excalidraw text-sm font-bold text-slate-400 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+        Despacha Notificação Instantânea
+      </span>
+
+      <!-- Camada Ativa (Colorida - Preenchimento do Topo para Baixo) -->
+      <div #node5ActiveLayer class="absolute inset-0 flex flex-col items-center justify-center bg-rose-100/95 px-10 py-8 text-center" style="clip-path: inset(0 0 100% 0);">
+        <span class="font-excalidraw text-xl font-extrabold tracking-wide text-rose-600 md:text-2xl xl:text-3xl whitespace-nowrap">
+          [NOTIFY] WhatsApp / Telegram
+        </span>
+        <span class="font-excalidraw text-sm font-bold text-rose-700 md:text-base xl:text-lg whitespace-nowrap mt-2.5">
+          Despacha Notificação Instantânea
+        </span>
+      </div>
     </div>
   </div>
 
