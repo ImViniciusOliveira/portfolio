@@ -127,6 +127,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             setTimeout(() => {
               this.calculatePaths();
+              ScrollTrigger.refresh(true);
               this.resetAndPlayHeroAnimation(false);
             }, 100);
           }
