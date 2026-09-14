@@ -95,6 +95,12 @@ export class Portfolio implements AfterViewInit, OnDestroy {
   @ViewChild('pathEl4') pathEl4?: ElementRef<SVGPathElement>;
   @ViewChild('pathEl5') pathEl5?: ElementRef<SVGPathElement>;
 
+  @ViewChild('arrowEl1') arrowEl1?: ElementRef<SVGPathElement>;
+  @ViewChild('arrowEl2') arrowEl2?: ElementRef<SVGPathElement>;
+  @ViewChild('arrowEl3') arrowEl3?: ElementRef<SVGPathElement>;
+  @ViewChild('arrowEl4') arrowEl4?: ElementRef<SVGPathElement>;
+  @ViewChild('arrowEl5') arrowEl5?: ElementRef<SVGPathElement>;
+
   path1 = signal<string>('');
   path2 = signal<string>('');
   path3 = signal<string>('');
@@ -325,11 +331,15 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       }
     });
 
-    this.arrowHead1.set({ x: 0, y: 0, angle: 0, visible: false });
-    this.arrowHead2.set({ x: 0, y: 0, angle: 0, visible: false });
-    this.arrowHead3.set({ x: 0, y: 0, angle: 0, visible: false });
-    this.arrowHead4.set({ x: 0, y: 0, angle: 0, visible: false });
-    this.arrowHead5.set({ x: 0, y: 0, angle: 0, visible: false });
+    [
+      this.arrowEl1?.nativeElement,
+      this.arrowEl2?.nativeElement,
+      this.arrowEl3?.nativeElement,
+      this.arrowEl4?.nativeElement,
+      this.arrowEl5?.nativeElement
+    ].forEach(arrow => {
+      if (arrow) this.setArrowState(arrow, { x: 0, y: 0, angle: 0, visible: false });
+    });
 
     this.currentNavigatedIndex = 0;
     this.revealedNodes.clear();
@@ -376,7 +386,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     this.autoNavTimeline = gsap.timeline({
       onComplete: () => {
         gsap.set(pathEl, { opacity: 1, strokeDashoffset: 0 });
-        this.arrowHead1.set({ x: 0, y: 0, angle: 0, visible: false });
+        this.setArrowState(this.arrowEl1?.nativeElement, { x: 0, y: 0, angle: 0, visible: false });
         gsap.set(node1, { opacity: 1, scale: 1, y: 0 });
         this.currentNavigatedIndex = 1;
         this.revealedNodes.add(1);
@@ -398,7 +408,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
         const pt = pathEl.getPointAtLength(currentLen);
         if (p >= 0.995) {
-          this.arrowHead1.set({ x: pt.x, y: pt.y, angle: 90, visible: false });
+          this.setArrowState(this.arrowEl1?.nativeElement, { x: pt.x, y: pt.y, angle: 90, visible: false });
           gsap.to(node1, {
             opacity: 1,
             scale: 1,
@@ -409,9 +419,9 @@ export class Portfolio implements AfterViewInit, OnDestroy {
           });
           this.activateNodeColor(1);
         } else {
-          const ptNext = pathEl.getPointAtLength(Math.min(currentLen + 1, length));
+          const ptNext = pathEl.getPointAtLength(Math.min(currentLen + 1, liveLen));
           const angle = Math.atan2(ptNext.y - pt.y, ptNext.x - pt.x) * (180 / Math.PI);
-          this.arrowHead1.set({ x: pt.x, y: pt.y, angle, visible: true });
+          this.setArrowState(this.arrowEl1?.nativeElement, { x: pt.x, y: pt.y, angle, visible: true });
 
           if (p >= 0.60) {
             gsap.to(node1, {
@@ -459,6 +469,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
         if (window.scrollY <= 15 || elapsed > 800) {
           this.startHeroAnimationSequence();
+          ScrollTrigger.refresh(true);
         } else {
           requestAnimationFrame(checkTop);
         }
@@ -667,12 +678,24 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     this.path5.set(this.buildSPath(n4.x, n4.yBottom, n5.x, n5.yTop));
   }
 
-  // Signals para controlar a posição/orientação da ponta da seta em movimento
-  arrowHead1 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
-  arrowHead2 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
-  arrowHead3 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
-  arrowHead4 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
-  arrowHead5 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
+  private setArrowState(
+    arrowEl: SVGPathElement | undefined,
+    state: { x: number; y: number; angle: number; visible: boolean }
+  ): void {
+    if (!arrowEl) return;
+    if (!state.visible) {
+      gsap.set(arrowEl, { opacity: 0 });
+    } else {
+      gsap.set(arrowEl, {
+        x: state.x,
+        y: state.y,
+        rotation: state.angle,
+        transformOrigin: '0% 0%',
+        opacity: 1,
+        overwrite: 'auto'
+      });
+    }
+  }
 
   private buildOriginToNode1Path(x1: number, y1: number, x2: number, y2: number): string {
     const dx = x2 - x1;
@@ -735,11 +758,11 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
   private initPathScrollAnimations(): void {
     const connections = [
-      { pathEl: this.pathEl1?.nativeElement, from: this.originDot?.nativeElement, to: this.node1Card?.nativeElement, targetNode: this.node1Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead1.set(state) },
-      { pathEl: this.pathEl2?.nativeElement, from: this.node1Card?.nativeElement, to: this.node2Card?.nativeElement, targetNode: this.node2Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead2.set(state) },
-      { pathEl: this.pathEl3?.nativeElement, from: this.node2Card?.nativeElement, to: this.node3Card?.nativeElement, targetNode: this.node3Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead3.set(state) },
-      { pathEl: this.pathEl4?.nativeElement, from: this.node3Card?.nativeElement, to: this.node4Card?.nativeElement, targetNode: this.node4Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead4.set(state) },
-      { pathEl: this.pathEl5?.nativeElement, from: this.node4Card?.nativeElement, to: this.node5Card?.nativeElement, targetNode: this.node5Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead5.set(state) }
+      { pathEl: this.pathEl1?.nativeElement, from: this.originDot?.nativeElement, to: this.node1Card?.nativeElement, targetNode: this.node1Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.setArrowState(this.arrowEl1?.nativeElement, state) },
+      { pathEl: this.pathEl2?.nativeElement, from: this.node1Card?.nativeElement, to: this.node2Card?.nativeElement, targetNode: this.node2Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.setArrowState(this.arrowEl2?.nativeElement, state) },
+      { pathEl: this.pathEl3?.nativeElement, from: this.node2Card?.nativeElement, to: this.node3Card?.nativeElement, targetNode: this.node3Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.setArrowState(this.arrowEl3?.nativeElement, state) },
+      { pathEl: this.pathEl4?.nativeElement, from: this.node3Card?.nativeElement, to: this.node4Card?.nativeElement, targetNode: this.node4Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.setArrowState(this.arrowEl4?.nativeElement, state) },
+      { pathEl: this.pathEl5?.nativeElement, from: this.node4Card?.nativeElement, to: this.node5Card?.nativeElement, targetNode: this.node5Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.setArrowState(this.arrowEl5?.nativeElement, state) }
     ];
 
     // Escuta evento customizado disparado pelos links do menu no header
@@ -836,7 +859,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
               if (index === 3 && progress >= 0.65) {
                 this.animateProjectsText();
               }
-              if (index === 4 && progress >= 0.70) {
+              if (index === 4 && progress >= 0.95) {
                 this.animateContactButton();
               }
 
@@ -903,8 +926,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     const sections = [
       { id: 'about', animate: () => this.animateAboutText() },
       { id: 'skills', animate: () => this.animateSkillsText() },
-      { id: 'projects', animate: () => this.animateProjectsText() },
-      { id: 'contact', animate: () => this.animateContactButton() }
+      { id: 'projects', animate: () => this.animateProjectsText() }
     ];
 
     sections.forEach(({ id, animate }) => {
@@ -925,6 +947,17 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
       this.triggers.push(st);
     });
+
+    const contactBtnEl = document.querySelector('.contact-submit-btn');
+    if (contactBtnEl) {
+      const st = ScrollTrigger.create({
+        trigger: contactBtnEl,
+        start: 'top 90%',
+        onEnter: () => this.animateContactButton(),
+        onEnterBack: () => this.animateContactButton()
+      });
+      this.triggers.push(st);
+    }
   }
 
   private readonly AUTO_NAV_DURATION = 1.1;
