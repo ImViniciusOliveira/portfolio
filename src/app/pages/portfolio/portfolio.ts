@@ -1,4 +1,14 @@
-import { Component, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  signal,
+  AfterViewInit,
+  OnDestroy,
+  Inject,
+  PLATFORM_ID
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Contact } from '../../contact/contact';
 
@@ -41,7 +51,87 @@ interface Project {
   styleUrl: './portfolio.css',
   templateUrl: './portfolio.html',
 })
-export class Portfolio {
+export class Portfolio implements AfterViewInit, OnDestroy {
+  @ViewChild('portfolioContainer') portfolioContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('node1Card') node1Card!: ElementRef<HTMLDivElement>;
+  @ViewChild('node2Card') node2Card!: ElementRef<HTMLDivElement>;
+  @ViewChild('node3Card') node3Card!: ElementRef<HTMLDivElement>;
+  @ViewChild('node4Card') node4Card!: ElementRef<HTMLDivElement>;
+  @ViewChild('node5Card') node5Card!: ElementRef<HTMLDivElement>;
+
+  path1 = signal<string>('');
+  path2 = signal<string>('');
+  path3 = signal<string>('');
+  path4 = signal<string>('');
+
+  private resizeObserver?: ResizeObserver;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Calcula os caminhos SVG após a renderização dos componentes
+    setTimeout(() => {
+      this.calculatePaths();
+    }, 150);
+
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.calculatePaths();
+      });
+      if (this.portfolioContainer?.nativeElement) {
+        this.resizeObserver.observe(this.portfolioContainer.nativeElement);
+      }
+    }
+  }
+
+  calculatePaths(): void {
+    if (
+      !this.portfolioContainer ||
+      !this.node1Card ||
+      !this.node2Card ||
+      !this.node3Card ||
+      !this.node4Card ||
+      !this.node5Card
+    ) {
+      return;
+    }
+
+    const containerRect = this.portfolioContainer.nativeElement.getBoundingClientRect();
+
+    const getCoords = (el: ElementRef<HTMLDivElement>) => {
+      const rect = el.nativeElement.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2 - containerRect.left,
+        yTop: rect.top - containerRect.top,
+        yBottom: rect.bottom - containerRect.top
+      };
+    };
+
+    const n1 = getCoords(this.node1Card);
+    const n2 = getCoords(this.node2Card);
+    const n3 = getCoords(this.node3Card);
+    const n4 = getCoords(this.node4Card);
+    const n5 = getCoords(this.node5Card);
+
+    // Conecta a base inferior de um nó com o topo do próximo em curva 'S'
+    this.path1.set(this.buildSPath(n1.x, n1.yBottom, n2.x, n2.yTop));
+    this.path2.set(this.buildSPath(n2.x, n2.yBottom, n3.x, n3.yTop));
+    this.path3.set(this.buildSPath(n3.x, n3.yBottom, n4.x, n4.yTop));
+    this.path4.set(this.buildSPath(n4.x, n4.yBottom, n5.x, n5.yTop));
+  }
+
+  private buildSPath(x1: number, y1: number, x2: number, y2: number): string {
+    const midY = y1 + (y2 - y1) * 0.5;
+    return `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+  }
+
+  ngOnDestroy(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+  }
 
   Link2 = Link2;
   Webhook = Webhook;

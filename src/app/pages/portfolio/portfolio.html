@@ -1,6 +1,83 @@
-<!-- Apresentação -->
-<section id="hero" class="flex flex-col justify-center pb-8 pt-4 md:pb-16 md:pt-6">
-  <div class="flex flex-col items-start gap-3 text-left md:gap-5">
+<div class="relative w-full overflow-hidden" #portfolioContainer>
+
+  <!-- SVG de Conexão dos Nós (Visível no Desktop em Curvas "S") -->
+  <svg
+    class="pointer-events-none absolute inset-0 -z-10 hidden h-full w-full lg:block"
+    style="overflow: visible;"
+  >
+    <defs>
+      <marker
+        id="arrowhead"
+        viewBox="0 0 10 10"
+        refX="8"
+        refY="5"
+        markerWidth="8"
+        markerHeight="8"
+        orient="auto-start-reverse"
+      >
+        <path d="M 0 1.5 L 9 5 L 0 8.5 L 2 5 z" fill="#64748b" />
+      </marker>
+    </defs>
+
+    @if (path1()) {
+      <path
+        [attr.d]="path1()"
+        stroke="#94a3b8"
+        stroke-width="3"
+        stroke-dasharray="8 6"
+        fill="none"
+        marker-end="url(#arrowhead)"
+      />
+    }
+
+    @if (path2()) {
+      <path
+        [attr.d]="path2()"
+        stroke="#94a3b8"
+        stroke-width="3"
+        stroke-dasharray="8 6"
+        fill="none"
+        marker-end="url(#arrowhead)"
+      />
+    }
+
+    @if (path3()) {
+      <path
+        [attr.d]="path3()"
+        stroke="#94a3b8"
+        stroke-width="3"
+        stroke-dasharray="8 6"
+        fill="none"
+        marker-end="url(#arrowhead)"
+      />
+    }
+
+    @if (path4()) {
+      <path
+        [attr.d]="path4()"
+        stroke="#94a3b8"
+        stroke-width="3"
+        stroke-dasharray="8 6"
+        fill="none"
+        marker-end="url(#arrowhead)"
+      />
+    }
+  </svg>
+
+  <!-- Apresentação -->
+  <section id="hero" class="relative flex flex-col justify-center pb-8 pt-4 md:pb-16 md:pt-6">
+
+    <!-- Nó 1: Recebe dados do n8n (Centralizado na metade direita de 50%) -->
+    <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
+      <div #node1Card class="inline-block rounded-sm border-[3px] border-sky-500 bg-sky-100/90 px-8 py-5 shadow-none">
+        <span class="font-excalidraw text-lg font-bold tracking-wide text-sky-800 md:text-xl whitespace-nowrap">
+          Recebe dados do n8n
+        </span>
+      </div>
+    </div>
+
+  <!-- Conteúdo de Apresentação alinhado à esquerda (50% no desktop) -->
+  <div class="flex w-full flex-col items-start gap-3 text-left md:gap-5 lg:w-1/2">
 
     <!-- Titulo h1 -->
     <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 md:text-6xl lg:text-7xl">
@@ -24,97 +101,110 @@
     </p>
 
     <!-- Botões -->
-<div class="mt-4 flex flex-wrap items-center gap-3">
+    <div class="mt-4 flex flex-wrap items-center gap-3">
 
-  <!-- Currículo -->
-  <a
-    href="/assets/resume.pdf"
-    download
-    class="flex items-center justify-center gap-2 rounded-lg bg-blue-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-800 hover:shadow-md"
-  >
-    <svg
-      class="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"
-      />
-    </svg>
+      <!-- Currículo -->
+      <a
+        href="/assets/resume.pdf"
+        download
+        class="flex items-center justify-center gap-2 rounded-lg bg-blue-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-800 hover:shadow-md"
+      >
+        <svg
+          class="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"
+          />
+        </svg>
 
-    Currículo
-  </a>
+        Currículo
+      </a>
 
-  <!-- GitHub -->
-  <a
-    href="https://github.com/ImViniciusOliveira"
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="GitHub"
-    class="flex items-center gap-2 rounded-lg px-2.5 py-2.5 text-slate-900 transition-all hover:bg-slate-100 hover:text-blue-900"
-  >
-    <svg
-      class="h-5 w-5 fill-current"
-      viewBox="0 0 24 24"
-    >
-      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-    </svg>
+      <!-- GitHub -->
+      <a
+        href="https://github.com/ImViniciusOliveira"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
+        class="flex items-center gap-2 rounded-lg px-2.5 py-2.5 text-slate-900 transition-all hover:bg-slate-100 hover:text-blue-900"
+      >
+        <svg
+          class="h-5 w-5 fill-current"
+          viewBox="0 0 24 24"
+        >
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
 
-    <span class="text-sm font-semibold">
-      GitHub
-    </span>
-  </a>
+        <span class="text-sm font-semibold">
+          GitHub
+        </span>
+      </a>
 
-  <!-- LinkedIn -->
-  <a
-    href="https://www.linkedin.com/in/imviniciusoliveira/"
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="LinkedIn"
-    class="flex items-center gap-2 rounded-lg px-2.5 py-2.5 text-slate-900 transition-all hover:bg-slate-100 hover:text-blue-900"
-  >
-    <svg
-      class="h-5 w-5 fill-current"
-      viewBox="0 0 24 24"
-    >
-      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-    </svg>
+      <!-- LinkedIn -->
+      <a
+        href="https://www.linkedin.com/in/imviniciusoliveira/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="LinkedIn"
+        class="flex items-center gap-2 rounded-lg px-2.5 py-2.5 text-slate-900 transition-all hover:bg-slate-100 hover:text-blue-900"
+      >
+        <svg
+          class="h-5 w-5 fill-current"
+          viewBox="0 0 24 24"
+        >
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+        </svg>
 
-    <span class="text-sm font-semibold">
-      LinkedIn
-    </span>
-  </a>
+        <span class="text-sm font-semibold">
+          LinkedIn
+        </span>
+      </a>
 
-</div>
+    </div>
 
   </div>
 </section>
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- Sobre Mim -->
-<section id="about" class="scroll-mt-20 pt-2 pb-12">
+<section id="about" class="relative scroll-mt-20 pt-2 pb-12">
 
-  <!-- Bloco ocupando 65% da largura total empurrado para a direita -->
-  <div class="ml-auto flex w-full flex-col items-start text-left lg:w-[65%]">
+  <!-- Nó 2: Processa Lógica & Fluxo (Centralizado na metade esquerda de 50%) -->
+  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-0 lg:w-1/2 lg:translate-x-0">
+    <div #node2Card class="inline-block rounded-sm border-[3px] border-purple-500 bg-purple-100/90 px-8 py-5 shadow-none">
+      <span class="font-excalidraw text-lg font-bold tracking-wide text-purple-800 md:text-xl whitespace-nowrap">
+        Processa Lógica & Fluxo
+      </span>
+    </div>
+  </div>
 
-    <!-- Título H2 // -->
-    <h2 class="mb-4 text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
-      Sobre Mim
-    </h2>
+  <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
 
-    <article class="flex flex-col gap-4">
-      <p class="text-base leading-relaxed text-slate-900 md:text-lg">
-        Desenvolvedor web fascinado por entender como as engrenagens da tecnologia funcionam por trás dos panos e por criar soluções que resolvem problemas com eficiência.
-      </p>
+    <!-- Bloco ocupando 50% da largura total alinhado para a DIREITA no desktop -->
+    <div class="ml-auto flex w-full flex-col items-start text-left lg:w-1/2">
 
-      <p class="text-base leading-relaxed text-slate-900 md:text-lg">
-        Minhas principais habilidades vêm principalmente de Java/Spring Boot no backend e Angular no frontend, gerenciamento de bancos de dados relacionais e não relacionais, além de containerização, integrações com arquiteturas de mensageria, automações n8n e agentes de IA.
-      </p>
-    </article>
+      <!-- Título H2 // -->
+      <h2 class="mb-4 text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
+        Sobre Mim
+      </h2>
+
+      <article class="flex flex-col gap-4">
+        <p class="text-base leading-relaxed text-slate-900 md:text-lg">
+          Desenvolvedor web fascinado por entender como as engrenagens da tecnologia funcionam por trás dos panos e por criar soluções que resolvem problemas com eficiência.
+        </p>
+
+        <p class="text-base leading-relaxed text-slate-900 md:text-lg">
+          Minhas principais habilidades vêm principalmente de Java/Spring Boot no backend e Angular no frontend, gerenciamento de bancos de dados relacionais e não relacionais, além de containerização, integrações com arquiteturas de mensageria, automações n8n e agentes de IA.
+        </p>
+      </article>
+
+    </div>
 
   </div>
 
@@ -122,152 +212,203 @@
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- Habilidades -->
-<section id="skills" class="scroll-mt-20 py-10 md:py-16">
+<section id="skills" class="relative scroll-mt-20 py-10 md:py-16">
 
-  <!-- Título H2-->
-  <h2 class="mb-8 text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
-    Skills
-  </h2>
+  <!-- Nó 3: Executa API Spring Boot (Centralizado na metade direita de 50%) -->
+  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
+    <div #node3Card class="inline-block rounded-sm border-[3px] border-amber-500 bg-amber-100/90 px-8 py-5 shadow-none">
+      <span class="font-excalidraw text-lg font-bold tracking-wide text-amber-800 md:text-xl whitespace-nowrap">
+        Executa API Spring Boot
+      </span>
+    </div>
+  </div>
 
-  <!-- Container Categoria -->
-  <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-    @for (category of skillCategories(); track category.category) {
-      <article class="break-inside-avoid flex flex-col gap-4">
+  <!-- Bloco alinhado à ESQUERDA (50% no desktop) -->
+  <div class="w-full lg:w-1/2">
 
-        <!-- Categorias -->
-        <h3 class="text-base font-semibold text-slate-900 md:text-lg">
-          {{ category.category }}
-        </h3>
+    <!-- Cabeçalho da Seção -->
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
+        Skills
+      </h2>
+    </div>
 
-                <!-- Tags de Skills -->
-        <ul class="flex flex-wrap gap-3">
-          @for (item of category.items; track item.name) {
-            <li class="inline-flex items-center gap-2.5 rounded border border-slate-200 bg-white px-3.5 py-2.5 shadow-sm transition-all hover:border-slate-300">
+    <!-- Container Categoria -->
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+      @for (category of skillCategories(); track category.category) {
+        <article class="break-inside-avoid flex flex-col gap-4">
 
-              @if (item.iconType === 'devicon') {
-                <i [class]="item.icon" class="colored text-base leading-none"></i>
-              }
+          <!-- Categorias -->
+          <h3 class="text-base font-semibold text-slate-900 md:text-lg">
+            {{ category.category }}
+          </h3>
 
-              @if (item.iconType === 'image') {
-                <img
-                  [src]="'/assets/skills/' + item.icon"
-                  [alt]="item.name"
-                  [class]="item.name === 'Mockito'
-                  ? 'h-4 w-9 object-contain'
-                  : 'h-4 w-4 object-contain'"
-                />
-              }
+                  <!-- Tags de Skills -->
+          <ul class="flex flex-wrap gap-3">
+            @for (item of category.items; track item.name) {
+              <li class="inline-flex items-center gap-2.5 rounded border border-slate-200 bg-white px-3.5 py-2.5 shadow-sm transition-all hover:border-slate-300">
 
-              @if (item.iconType === 'lucide') {
-                @if (item.icon === 'Link2') {
-                  <lucide-icon [img]="Link2" class="h-4 w-4 text-blue-600"></lucide-icon>
+                @if (item.iconType === 'devicon') {
+                  <i [class]="item.icon" class="colored text-base leading-none"></i>
                 }
 
-                @if (item.icon === 'Webhook') {
-                  <lucide-icon [img]="Webhook" class="h-4 w-4 text-purple-600"></lucide-icon>
+                @if (item.iconType === 'image') {
+                  <img
+                    [src]="'/assets/skills/' + item.icon"
+                    [alt]="item.name"
+                    [class]="item.name === 'Mockito'
+                    ? 'h-4 w-9 object-contain'
+                    : 'h-4 w-4 object-contain'"
+                  />
                 }
 
-                @if (item.icon === 'Store') {
-                  <lucide-icon [img]="Store" class="h-4 w-4 text-orange-500"></lucide-icon>
+                @if (item.iconType === 'lucide') {
+                  @if (item.icon === 'Link2') {
+                    <lucide-icon [img]="Link2" class="h-4 w-4 text-blue-600"></lucide-icon>
+                  }
+
+                  @if (item.icon === 'Webhook') {
+                    <lucide-icon [img]="Webhook" class="h-4 w-4 text-purple-600"></lucide-icon>
+                  }
+
+                  @if (item.icon === 'Store') {
+                    <lucide-icon [img]="Store" class="h-4 w-4 text-orange-500"></lucide-icon>
+                  }
+
+                  @if (item.icon === 'GitBranch') {
+                    <lucide-icon [img]="GitBranch" class="h-4 w-4 text-green-600"></lucide-icon>
+                  }
+
+                  @if (item.icon === 'Braces') {
+                    <lucide-icon [img]="Braces" class="h-4 w-4 text-indigo-600"></lucide-icon>
+  }
                 }
 
-                @if (item.icon === 'GitBranch') {
-                  <lucide-icon [img]="GitBranch" class="h-4 w-4 text-green-600"></lucide-icon>
-                }
+                <span class="text-sm font-normal text-slate-900 leading-none md:text-base">
+                  {{ item.name }}
+                </span>
 
-                @if (item.icon === 'Braces') {
-                  <lucide-icon [img]="Braces" class="h-4 w-4 text-indigo-600"></lucide-icon>
-}
-              }
+              </li>
+            }
+          </ul>
 
-              <span class="text-sm font-normal text-slate-900 leading-none md:text-base">
-                {{ item.name }}
-              </span>
+        </article>
+      }
+    </div>
 
-            </li>
-          }
-        </ul>
-
-      </article>
-    }
   </div>
 
 </section>
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- Projetos -->
-<section id="projects" class="scroll-mt-20 py-10 md:py-16">
+<section id="projects" class="relative scroll-mt-20 py-10 md:py-16">
 
-  <!-- Título H2 -->
-  <h2 class="mb-8 text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
-    Projetos
-  </h2>
+  <!-- Nó 4: Fila Mensageria RabbitMQ (Centralizado na metade esquerda de 50%) -->
+  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-0 lg:w-1/2 lg:translate-x-0">
+    <div #node4Card class="inline-block rounded-sm border-[3px] border-emerald-500 bg-emerald-100/90 px-8 py-5 shadow-none">
+      <span class="font-excalidraw text-lg font-bold tracking-wide text-emerald-800 md:text-xl whitespace-nowrap">
+        Fila Mensageria RabbitMQ
+      </span>
+    </div>
+  </div>
 
-  <!-- Cards -->
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-    @for (project of projects(); track project.title) {
-      <article class="flex flex-col justify-between rounded border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-slate-300">
+  <!-- Bloco alinhado à DIREITA (50% no desktop) -->
+  <div class="ml-auto w-full lg:w-1/2">
 
-        <div class="flex flex-col gap-3">
-          <!-- Cabeçalho Titulo/ Ano -->
-          <header class="flex items-center justify-between gap-4">
-            <h3 class="text-lg font-bold tracking-tight text-slate-900 md:text-xl">
-              {{ project.title }}
-            </h3>
-            <span class="text-xs font-normal text-slate-500 md:text-sm">
-              {{ project.year }}
-            </span>
-          </header>
+    <!-- Cabeçalho da Seção -->
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <!-- Título H2 -->
+      <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl before:content-['//_']">
+        Projetos
+      </h2>
+    </div>
 
-          <!-- Descrição -->
-          <p class="text-sm leading-relaxed text-slate-500 md:text-base">
-            {{ project.description }}
-          </p>
-        </div>
+    <!-- Cards (Mobile: 1 coluna | Tablet e Desktop: 2 colunas) -->
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+      @for (project of projects(); track project.title) {
+        <article class="flex flex-col justify-between rounded border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-slate-300">
 
-        <div class="mt-6 flex flex-col gap-4">
-          <!-- Tags -->
-          <div class="flex flex-wrap gap-2">
-            @for (tech of project.techs; track tech) {
-              <span class="inline-flex items-center rounded bg-slate-100 px-3 py-1 text-xs font-normal leading-none text-slate-900">
-                {{ tech }}
+          <div class="flex flex-col gap-3">
+            <!-- Cabeçalho Titulo/ Ano -->
+            <header class="flex items-center justify-between gap-4">
+              <h3 class="text-lg font-bold tracking-tight text-slate-900 md:text-xl">
+                {{ project.title }}
+              </h3>
+              <span class="text-xs font-normal text-slate-500 md:text-sm">
+                {{ project.year }}
               </span>
+            </header>
+
+            <!-- Descrição -->
+            <p class="text-sm leading-relaxed text-slate-500 md:text-base">
+              {{ project.description }}
+            </p>
+          </div>
+
+          <div class="mt-6 flex flex-col gap-4">
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2">
+              @for (tech of project.techs; track tech) {
+                <span class="inline-flex items-center rounded bg-slate-100 px-3 py-1 text-xs font-normal leading-none text-slate-900">
+                  {{ tech }}
+                </span>
+              }
+            </div>
+
+            <!-- Links Externos do Projeto -->
+            @if (project.link) {
+              <div class="flex items-center justify-start">
+                <a [href]="project.link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="group inline-flex items-center text-slate-900 focus:outline-none">
+
+                  <!-- Container com largura ajustada para o ícone + área sensível extra -->
+                  <div class="flex items-center pr-9 transition-all duration-300 group-hover:pr-0">
+
+                    <!-- Ícone SVG (24px) -->
+                    <svg class="h-6 w-6 shrink-0 fill-current text-slate-900 transition-colors duration-300 group-hover:text-blue-900" viewBox="0 0 24 24">
+                      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+
+                    <!-- Texto expandindo da esquerda para a direita sem sobras -->
+                    <span class="max-w-0 overflow-hidden whitespace-nowrap text-base font-extrabold opacity-0 transition-all duration-150 ease-linear group-hover:ml-2 group-hover:max-w-[100px] group-hover:bg-gradient-to-r group-hover:from-blue-900 group-hover:to-red-700 group-hover:bg-clip-text group-hover:text-transparent group-hover:opacity-100 group-hover:duration-550 md:text-lg">
+                      GitHub
+                    </span>
+
+                  </div>
+                </a>
+              </div>
             }
           </div>
 
-          <!-- Links Externos do Projeto -->
-          @if (project.link) {
-            <div class="flex items-center justify-start">
-              <a [href]="project.link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="group inline-flex items-center text-slate-900 focus:outline-none">
+        </article>
+      }
+    </div>
 
-                <!-- Container com largura ajustada para o ícone + área sensível extra -->
-                <div class="flex items-center pr-9 transition-all duration-300 group-hover:pr-0">
-
-                  <!-- Ícone SVG (24px) -->
-                  <svg class="h-6 w-6 shrink-0 fill-current text-slate-900 transition-colors duration-300 group-hover:text-blue-900" viewBox="0 0 24 24">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                  </svg>
-
-                  <!-- Texto expandindo da esquerda para a direita sem sobras -->
-                  <span class="max-w-0 overflow-hidden whitespace-nowrap text-base font-extrabold opacity-0 transition-all duration-150 ease-linear group-hover:ml-2 group-hover:max-w-[100px] group-hover:bg-gradient-to-r group-hover:from-blue-900 group-hover:to-red-700 group-hover:bg-clip-text group-hover:text-transparent group-hover:opacity-100 group-hover:duration-550 md:text-lg">
-                    GitHub
-                  </span>
-
-                </div>
-              </a>
-            </div>
-          }
-        </div>
-
-      </article>
-    }
   </div>
 
 </section>
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- Contato -->
-<app-contact></app-contact>
+<section id="contact" class="relative scroll-mt-20 py-10 md:py-16">
+
+  <!-- Nó 5: Notificação WhatsApp Dispatcher (Centralizado na metade direita de 50%) -->
+  <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
+    <div #node5Card class="inline-block rounded-sm border-[3px] border-rose-500 bg-rose-100/90 px-8 py-5 shadow-none">
+      <span class="font-excalidraw text-lg font-bold tracking-wide text-rose-800 md:text-xl whitespace-nowrap">
+        Notificação WhatsApp Dispatch
+      </span>
+    </div>
+  </div>
+
+  <!-- Bloco do Formulário de Contato alinhado à ESQUERDA (50% no desktop) -->
+  <div class="w-full lg:w-1/2">
+    <app-contact></app-contact>
+  </div>
+
+</section>
+
+</div>

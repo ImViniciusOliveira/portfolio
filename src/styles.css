@@ -1,7 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
-
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
 @import 'tailwindcss';
 @import 'devicon/devicon.min.css';
+
+.font-excalidraw {
+  font-family: 'Architects Daughter', cursive, sans-serif;
+}
 
 /* --------------------------------------------------------------------------
    1. RESET E CONFIGURAÇÃO DA PÁGINA
@@ -26,22 +29,32 @@ body {
    -------------------------------------------------------------------------- */
 section {
   width: 100%;
-  max-width: 72rem; /* Tailwind max-w-6xl: Evita que o conteúdo estique em monitores gigantes ou TVs */
+  max-width: 1728px; /* Teto máximo absoluto para telas grandes/1920px (padrão Figma/MacBook 16") */
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;  /* 16px de respiro no celular */
+  padding-left: 1rem;  /* 16px no celular */
   padding-right: 1rem;
   padding-top: 4rem;    /* 64px de espaçamento vertical no celular */
   padding-bottom: 4rem;
 }
 
-/* Telas de tablet e desktop (>= 768px) */
+/* Telas de tablet (768px ate 1023px) */
 @media (min-width: 768px) {
   section {
-    padding-left: 2rem;  /* 32px de respiro lateral no tablet/desktop */
+    padding-left: 2rem;  /* 32px no tablet */
     padding-right: 2rem;
-    padding-top: 6rem;   /* 96px de espaçamento vertical para dar respiro ao layout */
-    padding-bottom: 6rem;
+    padding-top: 5rem;   /* 80px de espaçamento vertical */
+    padding-bottom: 5rem;
+  }
+}
+
+/* Telas de desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  section {
+    padding-left: 80px;  /* 80px de respiro lateral (reduzido de 96px/5vw para colar mais nas bordas) */
+    padding-right: 80px;
+    padding-top: 5rem;   /* 80px de espaçamento vertical */
+    padding-bottom: 5rem;
   }
 }
 
