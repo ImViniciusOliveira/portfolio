@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Contact } from '../../contact/contact';
+import { Contact, animateContactSubmitButton } from '../../contact/contact';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -68,6 +68,21 @@ export class Portfolio implements AfterViewInit, OnDestroy {
   @ViewChild('node4Card') node4Card!: ElementRef<HTMLDivElement>;
   @ViewChild('node5Card') node5Card!: ElementRef<HTMLDivElement>;
 
+  @ViewChild('heroH1') heroH1?: ElementRef<HTMLHeadingElement>;
+  @ViewChild('heroH2') heroH2?: ElementRef<HTMLHeadingElement>;
+  @ViewChild('heroP') heroP?: ElementRef<HTMLParagraphElement>;
+  @ViewChild('heroBtns') heroBtns?: ElementRef<HTMLDivElement>;
+
+  @ViewChild('aboutTitle') aboutTitle?: ElementRef<HTMLHeadingElement>;
+  @ViewChild('aboutP1') aboutP1?: ElementRef<HTMLParagraphElement>;
+  @ViewChild('aboutP2') aboutP2?: ElementRef<HTMLParagraphElement>;
+
+  @ViewChild('skillsTitle') skillsTitle?: ElementRef<HTMLHeadingElement>;
+  @ViewChild('skillsContainer') skillsContainer?: ElementRef<HTMLDivElement>;
+
+  @ViewChild('projectsTitle') projectsTitle?: ElementRef<HTMLHeadingElement>;
+  @ViewChild('projectsContainer') projectsContainer?: ElementRef<HTMLDivElement>;
+
   @ViewChild('pathEl1') pathEl1?: ElementRef<SVGPathElement>;
   @ViewChild('pathEl2') pathEl2?: ElementRef<SVGPathElement>;
   @ViewChild('pathEl3') pathEl3?: ElementRef<SVGPathElement>;
@@ -82,6 +97,8 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
   private readonly triggers: ScrollTrigger[] = [];
   private resizeObserver?: ResizeObserver;
+  private skillsTimeline?: gsap.core.Timeline;
+  private animatedTextSections = new Set<string>();
 
   constructor(@Inject(PLATFORM_ID) private readonly platformId: Object) {}
 
@@ -120,6 +137,43 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       if (node) gsap.set(node, { opacity: 0, scale: 0.85, y: 35 });
     });
 
+    const btnChildren = this.heroBtns?.nativeElement
+      ? Array.from(this.heroBtns.nativeElement.children)
+      : [];
+
+    const heroElements = [
+      this.heroH1?.nativeElement,
+      this.heroH2?.nativeElement,
+      this.heroP?.nativeElement,
+      ...btnChildren
+    ].filter(Boolean);
+    gsap.set(heroElements, { opacity: 0, y: 24 });
+
+    const aboutElements = [
+      this.aboutTitle?.nativeElement,
+      this.aboutP1?.nativeElement,
+      this.aboutP2?.nativeElement
+    ].filter(Boolean);
+    gsap.set(aboutElements, { opacity: 0, y: 24 });
+
+    if (this.skillsTimeline) {
+      this.skillsTimeline.kill();
+      this.skillsTimeline = undefined;
+    }
+
+    const skillsElements = this.getSkillsAnimationElements();
+    gsap.set(skillsElements, { opacity: 0, y: 16 });
+
+    const projectsElements = this.getProjectsAnimationElements();
+    gsap.set(projectsElements, { opacity: 0, y: 16 });
+
+    if (typeof document !== 'undefined') {
+      const btn = document.querySelector('.contact-submit-btn');
+      const wave = document.querySelector('.contact-btn-wave');
+      if (btn) gsap.set(btn, { scale: 1 });
+      if (wave) gsap.set(wave, { scale: 0, opacity: 0 });
+    }
+
     const allPaths = [
       this.pathEl1?.nativeElement,
       this.pathEl2?.nativeElement,
@@ -143,6 +197,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
     this.currentNavigatedIndex = 0;
     this.revealedNodes.clear();
+    this.animatedTextSections.clear();
   }
 
   private startHeroAnimationSequence(): void {
@@ -154,6 +209,27 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     const pathEl = this.pathEl1.nativeElement;
     const length = pathEl.getTotalLength();
     const node1 = this.node1Card.nativeElement;
+
+    // Anima os elementos de texto e os 3 botões/links da Apresentação um por um com movimento suave
+    const btnChildren = this.heroBtns?.nativeElement
+      ? Array.from(this.heroBtns.nativeElement.children)
+      : [];
+
+    const heroElements = [
+      this.heroH1?.nativeElement,
+      this.heroH2?.nativeElement,
+      this.heroP?.nativeElement,
+      ...btnChildren
+    ].filter(Boolean);
+
+    if (!this.animatedTextSections.has('hero')) {
+      this.animatedTextSections.add('hero');
+      gsap.fromTo(
+        heroElements,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.95, stagger: 0.14, ease: 'power1.out', delay: 0.1 }
+      );
+    }
 
     // Executa a animação programada: HTTPS -> 1º Nó (Recebe dados do n8n)
     this.setHttpsLabelVisible(true);
@@ -238,6 +314,137 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     } else {
       this.startHeroAnimationSequence();
     }
+  }
+
+  private animateAboutText(): void {
+    if (this.animatedTextSections.has('about')) return;
+    this.animatedTextSections.add('about');
+
+    const aboutElements = [
+      this.aboutTitle?.nativeElement,
+      this.aboutP1?.nativeElement,
+      this.aboutP2?.nativeElement
+    ].filter(Boolean);
+
+    gsap.fromTo(
+      aboutElements,
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.95, stagger: 0.16, ease: 'power1.out', overwrite: 'auto' }
+    );
+  }
+
+  private getSkillsAnimationElements(): Element[] {
+    const elements: Element[] = [];
+    if (this.skillsTitle?.nativeElement) {
+      elements.push(this.skillsTitle.nativeElement);
+    }
+    if (this.skillsContainer?.nativeElement) {
+      const categoryCards = Array.from(
+        this.skillsContainer.nativeElement.querySelectorAll('.skill-category-card')
+      );
+      categoryCards.forEach((card) => {
+        const title = card.querySelector('.skill-category-title');
+        if (title) elements.push(title);
+        const badges = Array.from(card.querySelectorAll('.skill-badge'));
+        elements.push(...badges);
+      });
+    }
+    return elements;
+  }
+
+  private animateSkillsText(): void {
+    if (!this.skillsContainer?.nativeElement) return;
+    if (this.animatedTextSections.has('skills')) return;
+    this.animatedTextSections.add('skills');
+
+    if (this.skillsTimeline) {
+      this.skillsTimeline.kill();
+    }
+
+    this.skillsTimeline = gsap.timeline();
+
+    if (this.skillsTitle?.nativeElement) {
+      this.skillsTimeline.fromTo(
+        this.skillsTitle.nativeElement,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.3, ease: 'power1.out' }
+      );
+    }
+
+    const categoryCards = Array.from(
+      this.skillsContainer.nativeElement.querySelectorAll('.skill-category-card')
+    );
+
+    categoryCards.forEach((card, index) => {
+      const title = card.querySelector('.skill-category-title');
+      const badges = Array.from(card.querySelectorAll('.skill-badge'));
+      const cardElements = [title, ...badges].filter(Boolean);
+
+      if (cardElements.length && this.skillsTimeline) {
+        this.skillsTimeline.fromTo(
+          cardElements,
+          { opacity: 0, y: 16 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.28,
+            stagger: 0.04,
+            ease: 'power1.out'
+          },
+          index === 0 ? '-=0.1' : '-=0.18'
+        );
+      }
+    });
+  }
+
+  private getProjectsAnimationElements(): Element[] {
+    const elements: Element[] = [];
+    if (this.projectsTitle?.nativeElement) {
+      elements.push(this.projectsTitle.nativeElement);
+    }
+    if (this.projectsContainer?.nativeElement) {
+      const cards = Array.from(
+        this.projectsContainer.nativeElement.querySelectorAll('.project-card')
+      );
+      elements.push(...cards);
+    }
+    return elements;
+  }
+
+  private animateProjectsText(): void {
+    if (this.animatedTextSections.has('projects')) return;
+    this.animatedTextSections.add('projects');
+
+    const elements = this.getProjectsAnimationElements();
+    if (!elements.length) return;
+
+    gsap.fromTo(
+      elements,
+      { opacity: 0, y: 16 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.85,
+        stagger: 0.16,
+        ease: 'power1.out',
+        overwrite: 'auto'
+      }
+    );
+  }
+
+  private animateContactButton(): void {
+    if (typeof document === 'undefined') return;
+    if (this.animatedTextSections.has('contact')) return;
+    this.animatedTextSections.add('contact');
+
+    animateContactSubmitButton(2);
+  }
+
+  private triggerTargetSectionAnimation(targetIdx: number): void {
+    if (targetIdx === 2) this.animateAboutText();
+    else if (targetIdx === 3) this.animateSkillsText();
+    else if (targetIdx === 4) this.animateProjectsText();
+    else if (targetIdx === 5) this.animateContactButton();
   }
 
   calculatePaths(): void {
@@ -436,6 +643,19 @@ export class Portfolio implements AfterViewInit, OnDestroy {
             if (progress > 0.01) {
               gsap.set(pathEl, { opacity: 1, strokeDashoffset: length - currentLen });
 
+              if (index === 1 && progress >= 0.50) {
+                this.animateAboutText();
+              }
+              if (index === 2 && progress >= 0.35) {
+                this.animateSkillsText();
+              }
+              if (index === 3 && progress >= 0.65) {
+                this.animateProjectsText();
+              }
+              if (index === 4 && progress >= 0.70) {
+                this.animateContactButton();
+              }
+
               if (progress >= 0.98) {
                 this.currentNavigatedIndex = targetIdx;
                 this.revealedNodes.add(targetIdx);
@@ -578,6 +798,10 @@ export class Portfolio implements AfterViewInit, OnDestroy {
             const currentLen = length * p;
             gsap.set(pathEl, { strokeDashoffset: length - currentLen });
 
+            if (p >= 0.95) {
+              this.triggerTargetSectionAnimation(targetIdx);
+            }
+
             const pt = pathEl.getPointAtLength(currentLen);
             if (p >= 0.98) {
               setArrow({ x: pt.x, y: pt.y, angle: 90, visible: false });
@@ -603,17 +827,20 @@ export class Portfolio implements AfterViewInit, OnDestroy {
             if (targetCard) {
               gsap.set(targetCard, { opacity: 1, scale: 1, y: 0 });
             }
+            this.triggerTargetSectionAnimation(targetIdx);
           }
         });
       } else {
         if (targetCard) {
           gsap.to(targetCard, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)', overwrite: 'auto' });
         }
+        this.triggerTargetSectionAnimation(targetIdx);
       }
     } else {
       if (targetCard) {
         gsap.to(targetCard, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)', overwrite: 'auto' });
       }
+      this.triggerTargetSectionAnimation(targetIdx);
     }
 
     this.autoNavTimer = setTimeout(() => {
@@ -651,6 +878,9 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     }
     if (this.autoNavTimeline) {
       this.autoNavTimeline.kill();
+    }
+    if (this.skillsTimeline) {
+      this.skillsTimeline.kill();
     }
     this.triggers.forEach(t => t.kill());
   }

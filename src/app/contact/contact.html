@@ -11,6 +11,8 @@
       <form
         #contactForm="ngForm"
         (ngSubmit)="submitEmail(contactForm)"
+        (input)="checkFormValidity(contactForm)"
+        (change)="checkFormValidity(contactForm)"
         class="space-y-5 group"
       >
 
@@ -28,6 +30,7 @@
             name="name"
             type="text"
             [(ngModel)]="contactFormValues.name"
+            (ngModelChange)="checkFormValidity(contactForm)"
             #name="ngModel"
             required
             minlength="2"
@@ -56,6 +59,7 @@
             name="email"
             type="email"
             [(ngModel)]="contactFormValues.email"
+            (ngModelChange)="checkFormValidity(contactForm)"
             #email="ngModel"
             required
             email
@@ -84,6 +88,7 @@
             name="body"
             rows="5"
             [(ngModel)]="contactFormValues.body"
+            (ngModelChange)="checkFormValidity(contactForm)"
             #body="ngModel"
             required
             minlength="10"
@@ -115,8 +120,12 @@
           type="submit"
           [disabled]="isSubmitting()"
           [class.form-valid]="contactForm.valid && !isSubmitting()"
-          class="w-full rounded-md bg-blue-900 py-3.5 px-4 font-bold text-white shadow-md transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          class="contact-submit-btn relative overflow-hidden w-full rounded-md bg-blue-900 py-3.5 px-4 font-bold text-white shadow-md transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         >
+          <!-- Onda circular arredondada e fluida (anel azul expandindo do centro até as extremidades) -->
+          <span
+            class="contact-btn-wave pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 rounded-full border-[3px] border-blue-500/90 blur-[0.5px] shadow-[0_0_16px_rgba(59,130,246,0.9)] opacity-0 scale-0 origin-center"
+          ></span>
           @if (isSubmitting()) {
             <span class="inline-flex items-center justify-center gap-2">
               <svg
