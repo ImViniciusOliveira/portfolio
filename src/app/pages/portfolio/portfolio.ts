@@ -11,6 +11,12 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Contact } from '../../contact/contact';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 import {
   LucideAngularModule,
@@ -53,32 +59,47 @@ interface Project {
 })
 export class Portfolio implements AfterViewInit, OnDestroy {
   @ViewChild('portfolioContainer') portfolioContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('originDot') originDot!: ElementRef<HTMLDivElement>;
+  @ViewChild('httpsLabel') httpsLabel!: ElementRef<HTMLSpanElement>;
+
   @ViewChild('node1Card') node1Card!: ElementRef<HTMLDivElement>;
   @ViewChild('node2Card') node2Card!: ElementRef<HTMLDivElement>;
   @ViewChild('node3Card') node3Card!: ElementRef<HTMLDivElement>;
   @ViewChild('node4Card') node4Card!: ElementRef<HTMLDivElement>;
   @ViewChild('node5Card') node5Card!: ElementRef<HTMLDivElement>;
 
+  @ViewChild('pathEl1') pathEl1?: ElementRef<SVGPathElement>;
+  @ViewChild('pathEl2') pathEl2?: ElementRef<SVGPathElement>;
+  @ViewChild('pathEl3') pathEl3?: ElementRef<SVGPathElement>;
+  @ViewChild('pathEl4') pathEl4?: ElementRef<SVGPathElement>;
+  @ViewChild('pathEl5') pathEl5?: ElementRef<SVGPathElement>;
+
   path1 = signal<string>('');
   path2 = signal<string>('');
   path3 = signal<string>('');
   path4 = signal<string>('');
+  path5 = signal<string>('');
 
+  private readonly triggers: ScrollTrigger[] = [];
   private resizeObserver?: ResizeObserver;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(@Inject(PLATFORM_ID) private readonly platformId: Object) {}
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Calcula os caminhos SVG após a renderização dos componentes
+    // Calcula os caminhos SVG e inicia as animações GSAP amarradas ao Scroll
     setTimeout(() => {
       this.calculatePaths();
+      this.initNodeScrollAnimations();
+      this.initPathScrollAnimations();
+      this.resetAndPlayHeroAnimation(false);
     }, 150);
 
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver(() => {
         this.calculatePaths();
+        ScrollTrigger.refresh();
       });
       if (this.portfolioContainer?.nativeElement) {
         this.resizeObserver.observe(this.portfolioContainer.nativeElement);
@@ -86,9 +107,143 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     }
   }
 
+  private resetAllNodesAndPaths(): void {
+    const allNodes = [
+      this.node1Card?.nativeElement,
+      this.node2Card?.nativeElement,
+      this.node3Card?.nativeElement,
+      this.node4Card?.nativeElement,
+      this.node5Card?.nativeElement
+    ];
+
+    allNodes.forEach(node => {
+      if (node) gsap.set(node, { opacity: 0, scale: 0.85, y: 35 });
+    });
+
+    const allPaths = [
+      this.pathEl1?.nativeElement,
+      this.pathEl2?.nativeElement,
+      this.pathEl3?.nativeElement,
+      this.pathEl4?.nativeElement,
+      this.pathEl5?.nativeElement
+    ];
+
+    allPaths.forEach(path => {
+      if (path) {
+        const len = path.getTotalLength();
+        gsap.set(path, { opacity: 0, strokeDasharray: len, strokeDashoffset: len });
+      }
+    });
+
+    this.arrowHead1.set({ x: 0, y: 0, angle: 0, visible: false });
+    this.arrowHead2.set({ x: 0, y: 0, angle: 0, visible: false });
+    this.arrowHead3.set({ x: 0, y: 0, angle: 0, visible: false });
+    this.arrowHead4.set({ x: 0, y: 0, angle: 0, visible: false });
+    this.arrowHead5.set({ x: 0, y: 0, angle: 0, visible: false });
+
+    this.currentNavigatedIndex = 0;
+    this.revealedNodes.clear();
+  }
+
+  private startHeroAnimationSequence(): void {
+    if (!this.pathEl1?.nativeElement || !this.originDot?.nativeElement || !this.node1Card?.nativeElement) {
+      this.isAutoNavigating = false;
+      return;
+    }
+
+    const pathEl = this.pathEl1.nativeElement;
+    const length = pathEl.getTotalLength();
+    const node1 = this.node1Card.nativeElement;
+
+    // Executa a animação programada: HTTPS -> 1º Nó (Recebe dados do n8n)
+    this.setHttpsLabelVisible(true);
+    gsap.set(pathEl, { opacity: 1, strokeDasharray: length, strokeDashoffset: length });
+
+    const animObj = { progress: 0 };
+    this.autoNavTimeline = gsap.timeline({
+      onComplete: () => {
+        gsap.set(pathEl, { opacity: 1, strokeDashoffset: 0 });
+        this.arrowHead1.set({ x: 0, y: 0, angle: 0, visible: false });
+        gsap.set(node1, { opacity: 1, scale: 1, y: 0 });
+        this.currentNavigatedIndex = 1;
+        this.revealedNodes.add(1);
+        this.isAutoNavigating = false;
+        ScrollTrigger.refresh();
+      }
+    });
+
+    this.autoNavTimeline.to(animObj, {
+      progress: 1,
+      duration: 1.1,
+      ease: 'power2.inOut',
+      delay: 0.1,
+      onUpdate: () => {
+        const p = animObj.progress;
+        const currentLen = length * p;
+        gsap.set(pathEl, { opacity: 1, strokeDashoffset: length - currentLen });
+
+        const pt = pathEl.getPointAtLength(currentLen);
+        if (p >= 0.98) {
+          this.arrowHead1.set({ x: pt.x, y: pt.y, angle: 90, visible: false });
+          gsap.to(node1, {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.4,
+            ease: 'back.out(1.7)',
+            overwrite: 'auto'
+          });
+        } else {
+          const ptNext = pathEl.getPointAtLength(Math.min(currentLen + 1, length));
+          const angle = Math.atan2(ptNext.y - pt.y, ptNext.x - pt.x) * (180 / Math.PI);
+          this.arrowHead1.set({ x: pt.x, y: pt.y, angle, visible: true });
+        }
+      }
+    });
+  }
+
+  private resetAndPlayHeroAnimation(force: boolean = false): void {
+    if (typeof window === 'undefined') return;
+    if (!force && window.scrollY > 50) return;
+
+    this.isAutoNavigating = true;
+
+    if (this.autoNavTimer) {
+      clearTimeout(this.autoNavTimer);
+      this.autoNavTimer = undefined;
+    }
+    if (this.autoNavTimeline) {
+      this.autoNavTimeline.kill();
+      this.autoNavTimeline = undefined;
+    }
+
+    this.resetAllNodesAndPaths();
+
+    if (force) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      let startTime: number | null = null;
+      const checkTop = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+
+        if (window.scrollY <= 15 || elapsed > 800) {
+          this.startHeroAnimationSequence();
+        } else {
+          requestAnimationFrame(checkTop);
+        }
+      };
+
+      requestAnimationFrame(checkTop);
+    } else {
+      this.startHeroAnimationSequence();
+    }
+  }
+
   calculatePaths(): void {
     if (
       !this.portfolioContainer ||
+      !this.originDot ||
       !this.node1Card ||
       !this.node2Card ||
       !this.node3Card ||
@@ -104,22 +259,48 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       const rect = el.nativeElement.getBoundingClientRect();
       return {
         x: rect.left + rect.width / 2 - containerRect.left,
+        xRight: rect.right - containerRect.left,
+        yCenter: rect.top + rect.height / 2 - containerRect.top,
         yTop: rect.top - containerRect.top,
         yBottom: rect.bottom - containerRect.top
       };
     };
 
+    const origin = getCoords(this.originDot);
     const n1 = getCoords(this.node1Card);
     const n2 = getCoords(this.node2Card);
     const n3 = getCoords(this.node3Card);
     const n4 = getCoords(this.node4Card);
     const n5 = getCoords(this.node5Card);
 
-    // Conecta a base inferior de um nó com o topo do próximo em curva 'S'
-    this.path1.set(this.buildSPath(n1.x, n1.yBottom, n2.x, n2.yTop));
-    this.path2.set(this.buildSPath(n2.x, n2.yBottom, n3.x, n3.yTop));
-    this.path3.set(this.buildSPath(n3.x, n3.yBottom, n4.x, n4.yTop));
-    this.path4.set(this.buildSPath(n4.x, n4.yBottom, n5.x, n5.yTop));
+    // Conecta a lateral direita do ponto de origem (HTTPS) ao 1º cartão (vai reto, sobe um pouco e desce)
+    this.path1.set(this.buildOriginToNode1Path(origin.xRight, origin.yCenter, n1.x, n1.yTop));
+    this.path2.set(this.buildSPath(n1.x, n1.yBottom, n2.x, n2.yTop));
+    this.path3.set(this.buildSPath(n2.x, n2.yBottom, n3.x, n3.yTop));
+    this.path4.set(this.buildSPath(n3.x, n3.yBottom, n4.x, n4.yTop));
+    this.path5.set(this.buildSPath(n4.x, n4.yBottom, n5.x, n5.yTop));
+  }
+
+  // Signals para controlar a posição/orientação da ponta da seta em movimento
+  arrowHead1 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
+  arrowHead2 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
+  arrowHead3 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
+  arrowHead4 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
+  arrowHead5 = signal<{ x: number; y: number; angle: number; visible: boolean }>({ x: 0, y: 0, angle: 0, visible: false });
+
+  private buildOriginToNode1Path(x1: number, y1: number, x2: number, y2: number): string {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+
+    // Sai reto para a direita a partir da lateral do ponto e eleva-se levemente
+    const cp1X = x1 + dx * 0.45;
+    const cp1Y = y1 - 25;
+
+    // Curva suavemente para baixo em direção à entrada superior do 1º nó
+    const cp2X = x2;
+    const cp2Y = y1 + dy * 0.35;
+
+    return `M ${x1} ${y1} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${x2} ${y2}`;
   }
 
   private buildSPath(x1: number, y1: number, x2: number, y2: number): string {
@@ -127,10 +308,351 @@ export class Portfolio implements AfterViewInit, OnDestroy {
     return `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
   }
 
+  private initNodeScrollAnimations(): void {
+    const nodes = [
+      this.node1Card?.nativeElement,
+      this.node2Card?.nativeElement,
+      this.node3Card?.nativeElement,
+      this.node4Card?.nativeElement,
+      this.node5Card?.nativeElement
+    ];
+
+    // O ponto de origem (círculo preto) permanece visível.
+    // Todos os cards 1 a 5 começam ocultos até serem atingidos pelas setas
+    nodes.forEach((node) => {
+      if (!node) return;
+      gsap.set(node, {
+        opacity: 0,
+        scale: 0.85,
+        y: 35
+      });
+    });
+  }
+
+  private isAutoNavigating = false;
+  private currentNavigatedIndex = 0;
+  private revealedNodes = new Set<number>([0]);
+  private autoNavTimer?: any;
+  private autoNavTimeline?: gsap.core.Timeline;
+  private autoNavHandler?: (e: Event) => void;
+  private userScrollCleanup?: () => void;
+
+  private setHttpsLabelVisible(visible: boolean): void {
+    if (this.httpsLabel?.nativeElement) {
+      gsap.to(this.httpsLabel.nativeElement, {
+        opacity: visible ? 1 : 0,
+        duration: 0.3,
+        overwrite: 'auto'
+      });
+    }
+  }
+
+  private initPathScrollAnimations(): void {
+    const connections = [
+      { pathEl: this.pathEl1?.nativeElement, from: this.originDot?.nativeElement, to: this.node1Card?.nativeElement, targetNode: this.node1Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead1.set(state) },
+      { pathEl: this.pathEl2?.nativeElement, from: this.node1Card?.nativeElement, to: this.node2Card?.nativeElement, targetNode: this.node2Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead2.set(state) },
+      { pathEl: this.pathEl3?.nativeElement, from: this.node2Card?.nativeElement, to: this.node3Card?.nativeElement, targetNode: this.node3Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead3.set(state) },
+      { pathEl: this.pathEl4?.nativeElement, from: this.node3Card?.nativeElement, to: this.node4Card?.nativeElement, targetNode: this.node4Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead4.set(state) },
+      { pathEl: this.pathEl5?.nativeElement, from: this.node4Card?.nativeElement, to: this.node5Card?.nativeElement, targetNode: this.node5Card?.nativeElement, setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => this.arrowHead5.set(state) }
+    ];
+
+    // Escuta evento customizado disparado pelos links do menu no header
+    this.autoNavHandler = (e: Event) => {
+      const customEv = e as CustomEvent<{ targetId: string }>;
+      if (customEv.detail && customEv.detail.targetId) {
+        this.handleAutoNavigate(customEv.detail.targetId, connections);
+      }
+    };
+    window.addEventListener('portfolio-auto-navigate', this.autoNavHandler);
+
+    connections.forEach(({ pathEl, from, to, targetNode, setArrow }, index) => {
+      if (!pathEl || !from || !to) return;
+
+      const length = pathEl.getTotalLength();
+      const targetIdx = index + 1;
+
+      pathEl.removeAttribute('marker-end');
+      gsap.set(pathEl, {
+        opacity: 0,
+        strokeDasharray: length,
+        strokeDashoffset: length
+      });
+      setArrow({ x: 0, y: 0, angle: 0, visible: false });
+
+      const startTrigger = index === 0 ? 'top 85%' : 'center 60%';
+
+      const dummy = { progress: 0 };
+      const tween = gsap.to(dummy, {
+        progress: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: from,
+          endTrigger: to,
+          start: `${startTrigger}`,
+          end: 'center 60%',
+          scrub: true,
+          onUpdate: (self) => {
+            if (this.isAutoNavigating) return;
+
+            // No topo da página (F5 ou scroll no topo do Hero), força traçados, setas e texto HTTPS invisíveis caso o nó 0 ainda esteja ativo
+            if (this.currentNavigatedIndex === 0 && typeof window !== 'undefined' && window.scrollY <= 10) {
+              this.setHttpsLabelVisible(false);
+              gsap.set(pathEl, { opacity: 0, strokeDashoffset: length });
+              setArrow({ x: 0, y: 0, angle: 0, visible: false });
+              return;
+            } else {
+              this.setHttpsLabelVisible(true);
+            }
+
+            // Se estiver no topo da página (scrollY <= 50) e no 1º nó, apenas a conexão 0 fica ativa e revelada;
+            // nenhuma outra seta (conexão 1 em diante) deve sair do nó até o usuário iniciar o scroll manual.
+            if (typeof window !== 'undefined' && window.scrollY <= 50 && this.currentNavigatedIndex === 1) {
+              if (index === 0) {
+                gsap.set(pathEl, { opacity: 1, strokeDashoffset: 0 });
+                setArrow({ x: 0, y: 0, angle: 90, visible: false });
+                if (targetNode) gsap.set(targetNode, { opacity: 1, scale: 1, y: 0 });
+                return;
+              }
+              if (index >= 1) {
+                gsap.set(pathEl, { opacity: 0, strokeDashoffset: length });
+                setArrow({ x: 0, y: 0, angle: 0, visible: false });
+                return;
+              }
+            }
+
+            const progress = self.progress;
+            const currentLen = length * progress;
+            const pt = pathEl.getPointAtLength(Math.min(currentLen, length));
+
+            if (index < this.currentNavigatedIndex) {
+              gsap.set(pathEl, { opacity: 1, strokeDashoffset: 0 });
+              setArrow({ x: 0, y: 0, angle: 90, visible: false });
+              if (targetNode) {
+                gsap.set(targetNode, { opacity: 1, scale: 1, y: 0 });
+              }
+              return;
+            }
+
+            if (progress > 0.01) {
+              gsap.set(pathEl, { opacity: 1, strokeDashoffset: length - currentLen });
+
+              if (progress >= 0.98) {
+                this.currentNavigatedIndex = targetIdx;
+                this.revealedNodes.add(targetIdx);
+                setArrow({ x: pt.x, y: pt.y, angle: 90, visible: false });
+                if (targetNode) {
+                  gsap.to(targetNode, {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    duration: 0.4,
+                    ease: 'back.out(1.7)',
+                    overwrite: 'auto'
+                  });
+                }
+              } else {
+                const ptNext = pathEl.getPointAtLength(Math.min(currentLen + 1, length));
+                const angle = Math.atan2(ptNext.y - pt.y, ptNext.x - pt.x) * (180 / Math.PI);
+                setArrow({ x: pt.x, y: pt.y, angle, visible: true });
+                if (targetNode) {
+                  gsap.set(targetNode, { opacity: 0, scale: 0.85, y: 35 });
+                }
+              }
+            } else {
+              gsap.set(pathEl, { opacity: 0, strokeDashoffset: length });
+              setArrow({ x: 0, y: 0, angle: 0, visible: false });
+            }
+          }
+        }
+      });
+
+      if (tween.scrollTrigger) {
+        this.triggers.push(tween.scrollTrigger);
+      }
+    });
+  }
+
+  private readonly AUTO_NAV_DURATION = 1.1;
+
+  private handleAutoNavigate(
+    targetId: string,
+    connections: Array<{
+      pathEl?: SVGPathElement;
+      targetNode?: HTMLDivElement;
+      setArrow: (state: { x: number; y: number; angle: number; visible: boolean }) => void;
+    }>
+  ): void {
+    this.isAutoNavigating = true;
+
+    if (this.autoNavTimer) {
+      clearTimeout(this.autoNavTimer);
+      this.autoNavTimer = undefined;
+    }
+    if (this.userScrollCleanup) {
+      this.userScrollCleanup();
+      this.userScrollCleanup = undefined;
+    }
+    if (this.autoNavTimeline) {
+      this.autoNavTimeline.kill();
+      this.autoNavTimeline = undefined;
+    }
+
+    ScrollTrigger.getAll().forEach(t => t.disable(false));
+
+    if (targetId === 'hero') {
+      ScrollTrigger.getAll().forEach(t => t.enable(false));
+      this.resetAndPlayHeroAnimation(true);
+      return;
+    }
+
+    const targetIndexMap: Record<string, number> = {
+      hero: 0,
+      about: 2,
+      skills: 3,
+      projects: 4,
+      contact: 5
+    };
+
+    const targetIdx = targetIndexMap[targetId] ?? 0;
+    this.currentNavigatedIndex = targetIdx;
+
+    if (targetIdx === 0) {
+      this.setHttpsLabelVisible(false);
+    } else {
+      this.setHttpsLabelVisible(true);
+    }
+
+    const allNodes = [
+      this.originDot?.nativeElement,
+      this.node1Card?.nativeElement,
+      this.node2Card?.nativeElement,
+      this.node3Card?.nativeElement,
+      this.node4Card?.nativeElement,
+      this.node5Card?.nativeElement
+    ];
+
+    this.revealedNodes.clear();
+    for (let i = 0; i <= targetIdx; i++) {
+      this.revealedNodes.add(i);
+    }
+
+    connections.forEach((conn, idx) => {
+      const { pathEl, targetNode, setArrow } = conn;
+      if (!pathEl) return;
+
+      const length = pathEl.getTotalLength();
+
+      if (idx < targetIdx - 1) {
+        gsap.set(pathEl, { opacity: 1, strokeDashoffset: 0 });
+        setArrow({ x: 0, y: 0, angle: 0, visible: false });
+        if (targetNode) {
+          gsap.set(targetNode, { opacity: 1, scale: 1, y: 0 });
+        }
+      } else if (idx >= targetIdx) {
+        gsap.set(pathEl, { opacity: 0, strokeDashoffset: length });
+        setArrow({ x: 0, y: 0, angle: 0, visible: false });
+        if (targetNode) {
+          gsap.set(targetNode, { opacity: 0, scale: 0.85, y: 35 });
+        }
+      }
+    });
+
+    const targetCard = allNodes[targetIdx];
+
+    if (targetIdx > 0 && targetIdx <= connections.length) {
+      const connIndex = targetIdx - 1;
+      const { pathEl, setArrow } = connections[connIndex];
+
+      if (pathEl) {
+        const length = pathEl.getTotalLength();
+        gsap.set(pathEl, { opacity: 1, strokeDashoffset: length });
+
+        const animObj = { progress: 0 };
+        this.autoNavTimeline = gsap.timeline();
+        this.autoNavTimeline.to(animObj, {
+          progress: 1,
+          duration: this.AUTO_NAV_DURATION,
+          ease: 'power2.inOut',
+          onUpdate: () => {
+            const p = animObj.progress;
+            const currentLen = length * p;
+            gsap.set(pathEl, { strokeDashoffset: length - currentLen });
+
+            const pt = pathEl.getPointAtLength(currentLen);
+            if (p >= 0.98) {
+              setArrow({ x: pt.x, y: pt.y, angle: 90, visible: false });
+              if (targetCard) {
+                gsap.to(targetCard, {
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                  duration: 0.4,
+                  ease: 'back.out(1.7)',
+                  overwrite: 'auto'
+                });
+              }
+            } else {
+              const ptNext = pathEl.getPointAtLength(Math.min(currentLen + 1, length));
+              const angle = Math.atan2(ptNext.y - pt.y, ptNext.x - pt.x) * (180 / Math.PI);
+              setArrow({ x: pt.x, y: pt.y, angle, visible: true });
+            }
+          },
+          onComplete: () => {
+            gsap.set(pathEl, { strokeDashoffset: 0, opacity: 1 });
+            setArrow({ x: 0, y: 0, angle: 0, visible: false });
+            if (targetCard) {
+              gsap.set(targetCard, { opacity: 1, scale: 1, y: 0 });
+            }
+          }
+        });
+      } else {
+        if (targetCard) {
+          gsap.to(targetCard, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)', overwrite: 'auto' });
+        }
+      }
+    } else {
+      if (targetCard) {
+        gsap.to(targetCard, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)', overwrite: 'auto' });
+      }
+    }
+
+    this.autoNavTimer = setTimeout(() => {
+      const onManualUserScroll = () => {
+        window.removeEventListener('wheel', onManualUserScroll);
+        window.removeEventListener('touchmove', onManualUserScroll);
+        this.userScrollCleanup = undefined;
+        this.isAutoNavigating = false;
+        ScrollTrigger.getAll().forEach(t => t.enable(false));
+      };
+
+      window.addEventListener('wheel', onManualUserScroll, { passive: true });
+      window.addEventListener('touchmove', onManualUserScroll, { passive: true });
+
+      this.userScrollCleanup = () => {
+        window.removeEventListener('wheel', onManualUserScroll);
+        window.removeEventListener('touchmove', onManualUserScroll);
+      };
+      this.autoNavTimer = undefined;
+    }, 1150);
+  }
+
   ngOnDestroy(): void {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
+    if (this.autoNavHandler && typeof window !== 'undefined') {
+      window.removeEventListener('portfolio-auto-navigate', this.autoNavHandler);
+    }
+    if (this.userScrollCleanup) {
+      this.userScrollCleanup();
+    }
+    if (this.autoNavTimer) {
+      clearTimeout(this.autoNavTimer);
+    }
+    if (this.autoNavTimeline) {
+      this.autoNavTimeline.kill();
+    }
+    this.triggers.forEach(t => t.kill());
   }
 
   Link2 = Link2;

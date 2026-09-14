@@ -15,74 +15,138 @@
         markerHeight="8"
         orient="auto-start-reverse"
       >
-        <path d="M 0 1.5 L 9 5 L 0 8.5 L 2 5 z" fill="#64748b" />
+        <path d="M 0 1.5 L 9 5 L 0 8.5 L 2 5 z" fill="#059669" />
       </marker>
     </defs>
 
     @if (path1()) {
       <path
+        #pathEl1
         [attr.d]="path1()"
-        stroke="#94a3b8"
+        stroke="#10b981"
         stroke-width="3"
-        stroke-dasharray="8 6"
         fill="none"
-        marker-end="url(#arrowhead)"
+        style="opacity: 0;"
       />
+      @if (arrowHead1().visible) {
+        <path
+          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+          fill="#059669"
+          [attr.transform]="'translate(' + arrowHead1().x + ',' + arrowHead1().y + ') rotate(' + arrowHead1().angle + ')'"
+        />
+      }
     }
 
     @if (path2()) {
       <path
+        #pathEl2
         [attr.d]="path2()"
-        stroke="#94a3b8"
+        stroke="#10b981"
         stroke-width="3"
-        stroke-dasharray="8 6"
         fill="none"
-        marker-end="url(#arrowhead)"
+        style="opacity: 0;"
       />
+      @if (arrowHead2().visible) {
+        <path
+          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+          fill="#059669"
+          [attr.transform]="'translate(' + arrowHead2().x + ',' + arrowHead2().y + ') rotate(' + arrowHead2().angle + ')'"
+        />
+      }
     }
 
     @if (path3()) {
       <path
+        #pathEl3
         [attr.d]="path3()"
-        stroke="#94a3b8"
+        stroke="#10b981"
         stroke-width="3"
-        stroke-dasharray="8 6"
         fill="none"
-        marker-end="url(#arrowhead)"
+        style="opacity: 0;"
       />
+      @if (arrowHead3().visible) {
+        <path
+          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+          fill="#059669"
+          [attr.transform]="'translate(' + arrowHead3().x + ',' + arrowHead3().y + ') rotate(' + arrowHead3().angle + ')'"
+        />
+      }
     }
 
     @if (path4()) {
       <path
+        #pathEl4
         [attr.d]="path4()"
-        stroke="#94a3b8"
+        stroke="#10b981"
         stroke-width="3"
-        stroke-dasharray="8 6"
         fill="none"
-        marker-end="url(#arrowhead)"
+        style="opacity: 0;"
       />
+      @if (arrowHead4().visible) {
+        <path
+          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+          fill="#059669"
+          [attr.transform]="'translate(' + arrowHead4().x + ',' + arrowHead4().y + ') rotate(' + arrowHead4().angle + ')'"
+        />
+      }
+    }
+
+    @if (path5()) {
+      <path
+        #pathEl5
+        [attr.d]="path5()"
+        stroke="#10b981"
+        stroke-width="3"
+        fill="none"
+        style="opacity: 0;"
+      />
+      @if (arrowHead5().visible) {
+        <path
+          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+          fill="#059669"
+          [attr.transform]="'translate(' + arrowHead5().x + ',' + arrowHead5().y + ') rotate(' + arrowHead5().angle + ')'"
+        />
+      }
     }
   </svg>
 
+  <!-- Ponto de Origem Comum / Partida da Animação (Espaçamento do Header) -->
+  <section id="origin" class="relative flex min-h-[25vh] w-full flex-col items-start justify-center !pt-12 !pb-8 md:!pt-16 md:!pb-12">
+    <!-- Bloco do Ponto de Origem Comum (Círculo Preto + HTTPS) - Centralizado na 1ª coluna (1/4 da tela) -->
+    <div class="flex w-full lg:w-1/2 flex-col items-center justify-center select-none">
+      <span
+        #httpsLabel
+        class="font-excalidraw text-xs font-bold tracking-widest text-slate-800 transition-opacity duration-300 mb-1"
+        style="opacity: 0;"
+      >
+        HTTPS
+      </span>
+      <div
+        #originDot
+        class="h-4 w-4 rounded-full bg-slate-900 border-2 border-slate-700 shadow-sm"
+      ></div>
+    </div>
+  </section>
+
   <!-- Apresentação -->
-  <section id="hero" class="relative flex flex-col justify-center pb-8 pt-4 md:pb-16 md:pt-6">
+  <section id="hero" class="relative flex flex-col pb-20 !pt-0 md:pb-32">
 
     <!-- Nó 1: Recebe dados do n8n (Centralizado na metade direita de 50%) -->
     <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
-      <div #node1Card class="inline-block rounded-sm border-[3px] border-sky-500 bg-sky-100/90 px-8 py-5 shadow-none">
+      <div #node1Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-sky-500 bg-sky-100/90 px-8 py-5 shadow-none">
         <span class="font-excalidraw text-lg font-bold tracking-wide text-sky-800 md:text-xl whitespace-nowrap">
           Recebe dados do n8n
         </span>
       </div>
     </div>
 
-  <!-- Conteúdo de Apresentação alinhado à esquerda (50% no desktop) -->
-  <div class="flex w-full flex-col items-start gap-3 text-left md:gap-5 lg:w-1/2">
+    <!-- Conteúdo de Apresentação alinhado à esquerda (50% no desktop) -->
+    <div class="flex w-full flex-col items-start gap-3 text-left md:gap-5 lg:w-1/2">
 
-    <!-- Titulo h1 -->
-    <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 md:text-6xl lg:text-7xl">
-      Oi, sou o Vinicius
-    </h1>
+      <!-- Titulo h1 -->
+      <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 md:text-6xl lg:text-7xl">
+        Oi, sou o Vinicius
+      </h1>
 
     <!-- Titulo h2 -->
     <h2 class="relative inline-block origin-left text-2xl font-black md:text-4xl lg:text-5xl animate-scale-sync">      <!-- Camada de Pulsar -->
@@ -173,12 +237,12 @@
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- Sobre Mim -->
-<section id="about" class="relative scroll-mt-20 pt-2 pb-12">
+<section id="about" class="relative flex min-h-[85vh] flex-col justify-center scroll-mt-20 py-24 md:py-36">
 
   <!-- Nó 2: Processa Lógica & Fluxo (Centralizado na metade esquerda de 50%) -->
   <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-0 lg:w-1/2 lg:translate-x-0">
-    <div #node2Card class="inline-block rounded-sm border-[3px] border-purple-500 bg-purple-100/90 px-8 py-5 shadow-none">
-      <span class="font-excalidraw text-lg font-bold tracking-wide text-purple-800 md:text-xl whitespace-nowrap">
+    <div #node2Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-orange-600 bg-orange-200/90 px-8 py-5 shadow-none">
+      <span class="font-excalidraw text-lg font-bold tracking-wide text-orange-600 md:text-xl whitespace-nowrap">
         Processa Lógica & Fluxo
       </span>
     </div>
@@ -212,11 +276,11 @@
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- Habilidades -->
-<section id="skills" class="relative scroll-mt-20 py-10 md:py-16">
+<section id="skills" class="relative flex min-h-[85vh] flex-col justify-center scroll-mt-20 py-24 md:py-36">
 
   <!-- Nó 3: Executa API Spring Boot (Centralizado na metade direita de 50%) -->
   <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
-    <div #node3Card class="inline-block rounded-sm border-[3px] border-amber-500 bg-amber-100/90 px-8 py-5 shadow-none">
+    <div #node3Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-amber-500 bg-amber-100/90 px-8 py-5 shadow-none">
       <span class="font-excalidraw text-lg font-bold tracking-wide text-amber-800 md:text-xl whitespace-nowrap">
         Executa API Spring Boot
       </span>
@@ -272,7 +336,7 @@
                   }
 
                   @if (item.icon === 'Store') {
-                    <lucide-icon [img]="Store" class="h-4 w-4 text-orange-500"></lucide-icon>
+                    <lucide-icon [img]="Store" class="h-4 w-4 text-orange-600"></lucide-icon>
                   }
 
                   @if (item.icon === 'GitBranch') {
@@ -302,12 +366,12 @@
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- Projetos -->
-<section id="projects" class="relative scroll-mt-20 py-10 md:py-16">
+<section id="projects" class="relative flex min-h-[85vh] flex-col justify-center scroll-mt-20 py-24 md:py-36">
 
   <!-- Nó 4: Fila Mensageria RabbitMQ (Centralizado na metade esquerda de 50%) -->
   <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-0 lg:w-1/2 lg:translate-x-0">
-    <div #node4Card class="inline-block rounded-sm border-[3px] border-emerald-500 bg-emerald-100/90 px-8 py-5 shadow-none">
-      <span class="font-excalidraw text-lg font-bold tracking-wide text-emerald-800 md:text-xl whitespace-nowrap">
+    <div #node4Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-indigo-500 bg-indigo-100/90 px-8 py-5 shadow-none">
+      <span class="font-excalidraw text-lg font-bold tracking-wide text-indigo-800 md:text-xl whitespace-nowrap">
         Fila Mensageria RabbitMQ
       </span>
     </div>
@@ -393,11 +457,11 @@
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------ -->
 <!-- Contato -->
-<section id="contact" class="relative scroll-mt-20 py-10 md:py-16">
+<section id="contact" class="relative flex min-h-[85vh] flex-col justify-center scroll-mt-20 py-24 md:py-36">
 
   <!-- Nó 5: Notificação WhatsApp Dispatcher (Centralizado na metade direita de 50%) -->
   <div class="pointer-events-none select-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 flex justify-center lg:left-auto lg:right-0 lg:w-1/2 lg:translate-x-0">
-    <div #node5Card class="inline-block rounded-sm border-[3px] border-rose-500 bg-rose-100/90 px-8 py-5 shadow-none">
+    <div #node5Card style="opacity: 0;" class="inline-block rounded-sm border-[3px] border-rose-500 bg-rose-100/90 px-8 py-5 shadow-none">
       <span class="font-excalidraw text-lg font-bold tracking-wide text-rose-800 md:text-xl whitespace-nowrap">
         Notificação WhatsApp Dispatch
       </span>

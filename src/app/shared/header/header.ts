@@ -166,9 +166,18 @@ export class Header implements OnDestroy {
 
   scrollToSection(sectionId: string): void {
     this.activeSection.set(sectionId);
-    this.isManualScrolling = true;
 
     const performScroll = () => {
+      if (typeof window === 'undefined') return;
+
+      // 1. Notifica o portfolio para acionar o código automático
+      window.dispatchEvent(
+        new CustomEvent('portfolio-auto-navigate', {
+          detail: { targetId: sectionId }
+        })
+      );
+
+      // 2. Executa a rolagem suave nativa
       if (sectionId === 'hero') {
         window.scrollTo({
           top: 0,
@@ -177,13 +186,22 @@ export class Header implements OnDestroy {
       } else {
         const element = document.getElementById(sectionId);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          const elementRect = element.getBoundingClientRect();
+          const navOffset = 80;
+          let targetY: number;
+
+          if (elementRect.height < window.innerHeight) {
+            targetY = elementRect.top + window.scrollY - (window.innerHeight - elementRect.height) / 2;
+          } else {
+            targetY = elementRect.top + window.scrollY - navOffset;
+          }
+
+          window.scrollTo({
+            top: Math.max(0, targetY),
+            behavior: 'smooth'
+          });
         }
       }
-
-      setTimeout(() => {
-        this.isManualScrolling = false;
-      }, 700);
     };
 
     if (this.isMenuOpen()) {
