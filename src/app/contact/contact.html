@@ -1,0 +1,165 @@
+<section id="contact" class="scroll-mt-20 relative py-16 bg-slate-50">
+
+  <!-- Linha Separadora da Seção -->
+  <div
+    class="relative -top-16 -mx-4 mb-12 border-t border-slate-200/80"
+  ></div>
+
+  <!-- Conteúdo do formulário -->
+  <div class="max-w-xl mx-auto px-4">
+
+    <!-- Cabeçalho da Seção -->
+    <div class="text-left mb-8">
+      <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">
+        // Envie uma Mensagem
+      </h2>
+    </div>
+
+    <!-- Card Elevado do Formulário -->
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200/60">
+
+      <form
+        #contactForm="ngForm"
+        (ngSubmit)="submitEmail(contactForm)"
+        class="space-y-5 group"
+      >
+
+        <!-- Nome -->
+        <div>
+          <label
+            for="name"
+            class="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1"
+          >
+            Nome
+          </label>
+
+          <input
+            id="name"
+            name="name"
+            type="text"
+            [(ngModel)]="contactFormValues.name"
+            #name="ngModel"
+            required
+            minlength="2"
+            placeholder="Seu nome completo"
+            class="w-full rounded-md border border-slate-200 bg-slate-50/50 p-3 text-slate-900 text-sm shadow-sm transition-all focus:border-blue-900 focus:bg-white focus:outline-none"
+          />
+
+          @if (name.invalid && (name.touched || contactForm.submitted)) {
+            <p class="mt-1 text-xs text-red-500">
+              Nome é obrigatório (mínimo 2 caracteres).
+            </p>
+          }
+        </div>
+
+        <!-- E-mail -->
+        <div>
+          <label
+            for="email"
+            class="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1"
+          >
+            Email
+          </label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="contactFormValues.email"
+            #email="ngModel"
+            required
+            email
+            placeholder="seu.email@exemplo.com"
+            class="w-full rounded-md border border-slate-200 bg-slate-50/50 p-3 text-slate-900 text-sm shadow-sm transition-all focus:border-blue-900 focus:bg-white focus:outline-none"
+          />
+
+          @if (email.invalid && (email.touched || contactForm.submitted)) {
+            <p class="mt-1 text-xs text-red-500">
+              Insira um e-mail válido.
+            </p>
+          }
+        </div>
+
+        <!-- Mensagem -->
+        <div>
+          <label
+            for="body"
+            class="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1"
+          >
+            Mensagem
+          </label>
+
+          <textarea
+            id="body"
+            name="body"
+            rows="5"
+            [(ngModel)]="contactFormValues.body"
+            #body="ngModel"
+            required
+            minlength="10"
+            placeholder="Escreva sua mensagem..."
+            class="w-full rounded-md border border-slate-200 bg-slate-50/50 p-3 text-slate-900 text-sm shadow-sm transition-all focus:border-blue-900 focus:bg-white focus:outline-none"
+          ></textarea>
+
+          @if (body.invalid && (body.touched || contactForm.submitted)) {
+            <p class="mt-1 text-xs text-red-500">
+              Escreva ao menos 10 caracteres.
+            </p>
+          }
+        </div>
+
+        <!-- Alerta de Sucesso ou Erro -->
+        @if (showAlert()) {
+          <div
+            [class]="isSuccess()
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : 'bg-red-50 border-red-200 text-red-800'"
+            class="p-3.5 rounded-md border text-sm text-center font-medium shadow-sm transition-all"
+          >
+            {{ alertMessage() }}
+          </div>
+        }
+
+        <!-- Botão -->
+        <button
+          type="submit"
+          [disabled]="isSubmitting()"
+          [class.form-valid]="contactForm.valid && !isSubmitting()"
+          class="w-full rounded-md bg-blue-900 py-3.5 px-4 font-bold text-white shadow-md transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          @if (isSubmitting()) {
+            <span class="inline-flex items-center justify-center gap-2">
+              <svg
+                class="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+
+              Enviando...
+            </span>
+          } @else {
+            <span>Enviar Mensagem</span>
+          }
+        </button>
+
+      </form>
+    </div>
+
+  </div>
+</section>

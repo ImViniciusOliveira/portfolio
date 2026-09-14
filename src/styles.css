@@ -1,3 +1,95 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+@import 'devicon/devicon.min.css';
+
+/* --------------------------------------------------------------------------
+   1. RESET E CONFIGURAÇÃO DA PÁGINA
+   -------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth; /* Garante que os cliques no menu rolem a tela suavemente */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color-scheme: light; /* Força renderização nativa de elementos em modo claro */
+}
+
+body {
+  background-color: #f8fafc; /* Tailwind slate-50: Fundo suave e levemente acinzentado */
+  color: #0f172a; /* Tailwind slate-900: Texto escuro para contraste alto e leitura agradável */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased; /* Suavização de fontes em navegadores WebKit/Mac */
+}
+
+/* --------------------------------------------------------------------------
+   2. PADRONIZAÇÃO DE CONTAINERS E ESPAÇAMENTOS DAS SEÇÕES
+   -------------------------------------------------------------------------- */
+section {
+  width: 100%;
+  max-width: 72rem; /* Tailwind max-w-6xl: Evita que o conteúdo estique em monitores gigantes ou TVs */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;  /* 16px de respiro no celular */
+  padding-right: 1rem;
+  padding-top: 4rem;    /* 64px de espaçamento vertical no celular */
+  padding-bottom: 4rem;
+}
+
+/* Telas de tablet e desktop (>= 768px) */
+@media (min-width: 768px) {
+  section {
+    padding-left: 2rem;  /* 32px de respiro lateral no tablet/desktop */
+    padding-right: 2rem;
+    padding-top: 6rem;   /* 96px de espaçamento vertical para dar respiro ao layout */
+    padding-bottom: 6rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. PADRONIZAÇÃO TIPOGRÁFICA REUTILIZÁVEL (DESIGN SYSTEM)
+   3. ESTILIZAÇÃO DA BARRA DE ROLAGEM (SCROLLBAR)
+   -------------------------------------------------------------------------- */
+
+/* Título Principal de Seção (// Sobre Mim, // Skills, // Projetos, // Contato) */
+.section-title {
+  font-size: 1.5rem; /* 24px no celular */
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #0f172a; /* Slate 900 */
+  margin-bottom: 2rem; /* Separador entre o título e os cards */
+}
+
+@media (min-width: 768px) {
+  .section-title {
+    font-size: 1.875rem; /* 30px no desktop/tablet */
+    margin-bottom: 3rem;
+  }
+}
+
+/* Subtítulos de Seções e Modais */
+.section-subtitle {
+  font-size: 0.875rem; /* 14px */
+  color: #64748b; /* Slate 500 */
+  margin-top: -1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   4. ESTILIZAÇÃO DA BARRA DE ROLAGEM (SCROLLBAR)
+   -------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9; /* Slate 100 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* Slate 300 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Slate 400 */
+}

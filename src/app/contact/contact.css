@@ -1,0 +1,18 @@
+@keyframes button-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 0 rgb(30 58 138 / 0);
+  }
+
+  50% {
+    transform: scale(1.02);
+    box-shadow:
+      0 0 18px 5px rgb(30 58 138 / 0.40);
+  }
+}
+
+.form-valid {
+  animation: button-pulse 2s ease-in-out infinite;
+}

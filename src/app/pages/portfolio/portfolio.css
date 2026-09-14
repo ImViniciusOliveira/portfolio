@@ -1,0 +1,40 @@
+/* Animação sincronizada de escala (3s em ciclo infinito) */
+@keyframes textPulseScale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.01);
+  }
+}
+
+/* Classe utilitária para aplicar no HTML */
+.animate-scale-sync {
+  animation: textPulseScale 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* -------------------------------------------------------------------------------------- */
+
+/* Área clicável invisível de 2x antes do hover */
+.github-trigger {
+  position: relative;
+}
+
+.github-trigger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  pointer-events: auto;
+}
+
+/* No momento do hover, o bloco invisível é destruído instantaneamente */
+.github-trigger:hover::before {
+  display: none !important;
+  width: 0 !important;
+  pointer-events: none !important;
+}
+
+/* -------------------------------------------------------------------------------------- */
