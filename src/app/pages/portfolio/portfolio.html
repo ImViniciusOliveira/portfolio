@@ -29,13 +29,12 @@
         fill="none"
         style="opacity: 0;"
       />
-      @if (arrowHead1().visible) {
-        <path
-          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
-          fill="#059669"
-          [attr.transform]="'translate(' + arrowHead1().x + ',' + arrowHead1().y + ') rotate(' + arrowHead1().angle + ')'"
-        />
-      }
+      <path
+        #arrowEl1
+        d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+        fill="#059669"
+        style="opacity: 0;"
+      />
     }
 
     @if (path2()) {
@@ -47,13 +46,12 @@
         fill="none"
         style="opacity: 0;"
       />
-      @if (arrowHead2().visible) {
-        <path
-          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
-          fill="#059669"
-          [attr.transform]="'translate(' + arrowHead2().x + ',' + arrowHead2().y + ') rotate(' + arrowHead2().angle + ')'"
-        />
-      }
+      <path
+        #arrowEl2
+        d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+        fill="#059669"
+        style="opacity: 0;"
+      />
     }
 
     @if (path3()) {
@@ -65,13 +63,12 @@
         fill="none"
         style="opacity: 0;"
       />
-      @if (arrowHead3().visible) {
-        <path
-          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
-          fill="#059669"
-          [attr.transform]="'translate(' + arrowHead3().x + ',' + arrowHead3().y + ') rotate(' + arrowHead3().angle + ')'"
-        />
-      }
+      <path
+        #arrowEl3
+        d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+        fill="#059669"
+        style="opacity: 0;"
+      />
     }
 
     @if (path4()) {
@@ -83,13 +80,12 @@
         fill="none"
         style="opacity: 0;"
       />
-      @if (arrowHead4().visible) {
-        <path
-          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
-          fill="#059669"
-          [attr.transform]="'translate(' + arrowHead4().x + ',' + arrowHead4().y + ') rotate(' + arrowHead4().angle + ')'"
-        />
-      }
+      <path
+        #arrowEl4
+        d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+        fill="#059669"
+        style="opacity: 0;"
+      />
     }
 
     @if (path5()) {
@@ -101,13 +97,12 @@
         fill="none"
         style="opacity: 0;"
       />
-      @if (arrowHead5().visible) {
-        <path
-          d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
-          fill="#059669"
-          [attr.transform]="'translate(' + arrowHead5().x + ',' + arrowHead5().y + ') rotate(' + arrowHead5().angle + ')'"
-        />
-      }
+      <path
+        #arrowEl5
+        d="M -6 -4 L 5 0 L -6 4 L -3 0 z"
+        fill="#059669"
+        style="opacity: 0;"
+      />
     }
   </svg>
 
