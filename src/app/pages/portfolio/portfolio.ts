@@ -120,7 +120,21 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       this.initNodeScrollAnimations();
       this.initPathScrollAnimations();
       this.initSectionScrollAnimations();
-      this.resetAndPlayHeroAnimation(false);
+
+      if (typeof document !== 'undefined' && document.hidden) {
+        const handleVisibilityChange = () => {
+          if (!document.hidden) {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            setTimeout(() => {
+              this.calculatePaths();
+              this.resetAndPlayHeroAnimation(false);
+            }, 100);
+          }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+      } else {
+        this.resetAndPlayHeroAnimation(false);
+      }
     }, 50);
 
     if (typeof ResizeObserver !== 'undefined') {
