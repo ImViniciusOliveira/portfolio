@@ -111,32 +111,29 @@ export class Portfolio implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Reseta imediatamente todos os nós e elementos de texto no 1º frame do browser
     this.resetAllNodesAndPaths();
 
-    // Calcula os caminhos SVG e inicia as animações GSAP amarradas ao Scroll
-    setTimeout(() => {
-      this.calculatePaths();
-      this.initNodeScrollAnimations();
-      this.initPathScrollAnimations();
-      this.initSectionScrollAnimations();
-
-      if (typeof document !== 'undefined' && document.hidden) {
-        const handleVisibilityChange = () => {
-          if (!document.hidden) {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            setTimeout(() => {
-              this.calculatePaths();
-              ScrollTrigger.refresh(true);
-              this.resetAndPlayHeroAnimation(false);
-            }, 100);
+    const runInit = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          this.reinitAll();
+          if (window.scrollY <= 50) {
+            this.resetAndPlayHeroAnimation(false);
           }
-        };
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-      } else {
-        this.resetAndPlayHeroAnimation(false);
-      }
-    }, 50);
+        });
+      });
+    };
+
+    runInit();
+
+    if (typeof document !== 'undefined') {
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          runInit();
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
 
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver(() => {
@@ -147,6 +144,17 @@ export class Portfolio implements AfterViewInit, OnDestroy {
         this.resizeObserver.observe(this.portfolioContainer.nativeElement);
       }
     }
+  }
+
+  private reinitAll(): void {
+    this.triggers.forEach(t => t.kill());
+    this.triggers.length = 0;
+
+    this.calculatePaths();
+    this.initNodeScrollAnimations();
+    this.initPathScrollAnimations();
+    this.initSectionScrollAnimations();
+    ScrollTrigger.refresh(true);
   }
 
   private readonly borderActiveColors = [
@@ -361,7 +369,8 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
     // Executa a animação programada: HTTPS -> 1º Nó (Recebe dados do n8n)
     this.setHttpsLabelVisible(true);
-    gsap.set(pathEl, { opacity: 1, strokeDasharray: length, strokeDashoffset: length });
+    const initialLen = pathEl.getTotalLength() || 1;
+    gsap.set(pathEl, { opacity: 1, strokeDasharray: initialLen, strokeDashoffset: initialLen });
 
     const animObj = { progress: 0 };
     this.autoNavTimeline = gsap.timeline({
@@ -383,8 +392,9 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       delay: 0.1,
       onUpdate: () => {
         const p = animObj.progress;
-        const currentLen = length * p;
-        gsap.set(pathEl, { opacity: 1, strokeDashoffset: length - currentLen });
+        const liveLen = pathEl.getTotalLength() || initialLen;
+        const currentLen = liveLen * p;
+        gsap.set(pathEl, { opacity: 1, strokeDashoffset: liveLen - currentLen });
 
         const pt = pathEl.getPointAtLength(currentLen);
         if (p >= 0.995) {
@@ -770,6 +780,8 @@ export class Portfolio implements AfterViewInit, OnDestroy {
           onUpdate: (self) => {
             if (this.isAutoNavigating) return;
 
+            const length = pathEl.getTotalLength() || 1;
+
             // No topo da página (F5 ou scroll no topo do Hero), força traçados, setas e texto HTTPS invisíveis caso o nó 0 ainda esteja ativo
             if (this.currentNavigatedIndex === 0 && typeof window !== 'undefined' && window.scrollY <= 10) {
               this.setHttpsLabelVisible(false);
@@ -942,8 +954,22 @@ export class Portfolio implements AfterViewInit, OnDestroy {
 
     ScrollTrigger.getAll().forEach(t => t.disable(false));
 
-    if (targetId === 'hero') {
+    const finishAutoNav = () => {
+      if (this.autoNavTimer) {
+        clearTimeout(this.autoNavTimer);
+        this.autoNavTimer = undefined;
+      }
+      if (this.userScrollCleanup) {
+        this.userScrollCleanup();
+        this.userScrollCleanup = undefined;
+      }
+      this.isAutoNavigating = false;
       ScrollTrigger.getAll().forEach(t => t.enable(false));
+      ScrollTrigger.refresh();
+    };
+
+    if (targetId === 'hero') {
+      finishAutoNav();
       this.resetAndPlayHeroAnimation(true);
       return;
     }
@@ -983,7 +1009,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       const { pathEl, targetNode, setArrow } = conn;
       if (!pathEl) return;
 
-      const length = pathEl.getTotalLength();
+      const length = pathEl.getTotalLength() || 1;
 
       if (idx < targetIdx - 1) {
         gsap.set(pathEl, { opacity: 1, strokeDashoffset: 0 });
@@ -1009,7 +1035,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
       const { pathEl, setArrow } = connections[connIndex];
 
       if (pathEl) {
-        const length = pathEl.getTotalLength();
+        const length = pathEl.getTotalLength() || 1;
         gsap.set(pathEl, { opacity: 1, strokeDashoffset: length });
 
         const animObj = { progress: 0 };
@@ -1074,6 +1100,7 @@ export class Portfolio implements AfterViewInit, OnDestroy {
             }
             this.activateNodeColor(targetIdx, true);
             this.triggerTargetSectionAnimation(targetIdx);
+            finishAutoNav();
           }
         });
       } else {
@@ -1081,32 +1108,37 @@ export class Portfolio implements AfterViewInit, OnDestroy {
           gsap.to(targetCard, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)', overwrite: 'auto' });
         }
         this.triggerTargetSectionAnimation(targetIdx);
+        finishAutoNav();
       }
     } else {
       if (targetCard) {
         gsap.to(targetCard, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)', overwrite: 'auto' });
       }
       this.triggerTargetSectionAnimation(targetIdx);
+      finishAutoNav();
+    }
+
+    const onUserInteract = () => {
+      finishAutoNav();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', onUserInteract, { passive: true, once: true });
+      window.addEventListener('wheel', onUserInteract, { passive: true, once: true });
+      window.addEventListener('touchmove', onUserInteract, { passive: true, once: true });
+      window.addEventListener('keydown', onUserInteract, { passive: true, once: true });
+
+      this.userScrollCleanup = () => {
+        window.removeEventListener('scroll', onUserInteract);
+        window.removeEventListener('wheel', onUserInteract);
+        window.removeEventListener('touchmove', onUserInteract);
+        window.removeEventListener('keydown', onUserInteract);
+      };
     }
 
     this.autoNavTimer = setTimeout(() => {
-      const onManualUserScroll = () => {
-        window.removeEventListener('wheel', onManualUserScroll);
-        window.removeEventListener('touchmove', onManualUserScroll);
-        this.userScrollCleanup = undefined;
-        this.isAutoNavigating = false;
-        ScrollTrigger.getAll().forEach(t => t.enable(false));
-      };
-
-      window.addEventListener('wheel', onManualUserScroll, { passive: true });
-      window.addEventListener('touchmove', onManualUserScroll, { passive: true });
-
-      this.userScrollCleanup = () => {
-        window.removeEventListener('wheel', onManualUserScroll);
-        window.removeEventListener('touchmove', onManualUserScroll);
-      };
-      this.autoNavTimer = undefined;
-    }, 1150);
+      finishAutoNav();
+    }, Math.round(this.AUTO_NAV_DURATION * 1000) + 100);
   }
 
   ngOnDestroy(): void {
