@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { inject as injectAnalytics } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 import { Footer } from './shared/footer/footer';
 import { Portfolio } from './pages/portfolio/portfolio';
 import { Header } from './shared/header/header';
@@ -16,6 +17,7 @@ export class App {
   constructor() {
     if (typeof window !== 'undefined') {
       injectAnalytics();
+      injectSpeedInsights();
     }
   }
 }
